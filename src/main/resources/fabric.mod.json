@@ -1,0 +1,44 @@
+{
+	"schemaVersion": 1,
+	"id": "minebuck_currency",
+	"version": "${version}",
+	"name": "Ⓜinebuck Currency",
+	"description": "This is a Fabric and Quilt Mod to add a new currency, complete of cash, cards, ATMs, and much more!",
+	"authors": [
+		"Rupyber Studios",
+		"Pyrix25633",
+		"Ruken"
+	],
+	"contributors": [],
+	"contact": {
+		"homepage": "https://rupyberstudios.github.io/website/",
+		"sources": "https://github.com/Pyrix25633/Fabric-FbiAndSwatArmors",
+		"issues": "https://github.com/Pyrix25633/Fabric-FbiAndSwatArmors/issues"
+	},
+	"license": "GPL-3.0",
+	"icon": "assets/minebuck_currency/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"net.rupyberstudios.minebuck_currency.MinebuckCurrency"
+		],
+		"client": [
+			"net.rupyberstudios.minebuck_currency.MinebuckCurrencyClient"
+		],
+		"fabric-datagen": [
+			"net.rupyberstudios.minebuck_currency.MinebuckCurrencyDataGenerator"
+		]
+	},
+	"mixins": [
+		"minebuck_currency.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.14.22",
+		"minecraft": "~1.20.1",
+		"java": ">=17",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}

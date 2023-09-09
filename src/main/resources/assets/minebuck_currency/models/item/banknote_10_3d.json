@@ -1,0 +1,7 @@
+{
+  "parent": "minebuck_currency:item/banknote_3d",
+  "textures": {
+    "front": "minebuck_currency:item/cash/banknote_10_front",
+    "back": "minebuck_currency:item/cash/banknote_10_back"
+  }
+}

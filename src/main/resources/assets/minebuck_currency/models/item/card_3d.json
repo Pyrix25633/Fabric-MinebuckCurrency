@@ -1,0 +1,66 @@
+{
+	"textures": {
+		"0": "minebuck_currency:item/card/card_front",
+		"1": "minebuck_currency:item/card/card_back",
+		"2": "minebuck_currency:item/card/card_front_overlay",
+		"3": "minebuck_currency:item/card/card_back_overlay"
+	},
+	"elements": [
+		{
+			"from": [0, 0, 7],
+			"to": [16, 10, 8],
+			"faces": {
+				"north": {"uv": [0, 3, 16, 13], "texture": "#1", "tintindex": 0},
+				"east": {"uv": [0, 3, 1, 13], "texture": "#0", "tintindex": 0},
+				"south": {"uv": [0, 3, 16, 13], "texture": "#0", "tintindex": 0},
+				"west": {"uv": [15, 3, 16, 13], "texture": "#0", "tintindex": 0},
+				"up": {"uv": [0, 12, 16, 13], "rotation": 180, "texture": "#0", "tintindex": 0},
+				"down": {"uv": [0, 3, 16, 4], "rotation": 180, "texture": "#1", "tintindex": 0}
+			}
+		},
+		{
+			"from": [0, 0, 7],
+			"to": [16, 10, 8],
+			"faces": {
+				"north": {"uv": [0, 3, 16, 13], "texture": "#3"},
+				"south": {"uv": [0, 3, 16, 13], "texture": "#2"}
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"translation": [0, 2.25, 1],
+			"scale": [0.3, 0.3, 0.3]
+		},
+		"thirdperson_lefthand": {
+			"translation": [0, 2.25, 1],
+			"scale": [0.3, 0.3, 0.3]
+		},
+		"firstperson_righthand": {
+			"rotation": [0, -10, 0],
+			"translation": [2.25, 3.25, 0],
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"firstperson_lefthand": {
+			"rotation": [0, -10, 0],
+			"translation": [2.25, 3.25, 0],
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"ground": {
+			"rotation": [-90, 0, 0],
+			"translation": [0, -1.5, -2],
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"gui": {
+			"translation": [0, 3, 0]
+		},
+		"head": {
+			"rotation": [-180, 0, -180],
+			"translation": [0, 2.75, -7.25]
+		},
+		"fixed": {
+			"rotation": [0, -180, 0],
+			"translation": [0, 3, 0]
+		}
+	}
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "minebuck_currency:item/card/card_front",
+    "layer1": "minebuck_currency:item/card/card_front_overlay"
+  }
+}

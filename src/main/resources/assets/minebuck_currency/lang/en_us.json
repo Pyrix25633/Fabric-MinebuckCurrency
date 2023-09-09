@@ -1,0 +1,16 @@
+{
+  "item_group.minebuck_currency.minebuck_currency": "Ⓜinebuck Currency",
+
+  "item.minebuck_currency.coin_1": "1Ⓜ Coin",
+  "item.minebuck_currency.coin_2": "2Ⓜ Coin",
+  "item.minebuck_currency.banknote_5": "5Ⓜ Banknote",
+  "item.minebuck_currency.banknote_10": "10Ⓜ Banknote",
+  "item.minebuck_currency.banknote_20": "20Ⓜ Banknote",
+  "item.minebuck_currency.banknote_50": "50Ⓜ Banknote",
+  "item.minebuck_currency.banknote_100": "100Ⓜ Banknote",
+  "item.minebuck_currency.banknote_200": "200Ⓜ Banknote",
+
+  "item.minebuck_currency.card": "Ⓑank Card",
+
+  "item.minebuck_currency.receipt": "Receipt"
+}
