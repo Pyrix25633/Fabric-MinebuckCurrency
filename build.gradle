@@ -44,6 +44,8 @@ sourceSets {
 	}
 }
 dependencies {
+	implementation group: 'org.xerial', name: 'sqlite-jdbc', version: '3.34.0'
+
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
