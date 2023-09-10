@@ -1,13 +1,16 @@
 package net.rupyberstudios.minebuck_currency.block.custom;
 
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
@@ -17,12 +20,15 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.rupyberstudios.minebuck_currency.block.entity.ComputerBlockEntity;
+import net.rupyberstudios.minebuck_currency.block.property.ComputerOpenScreen;
+import net.rupyberstudios.minebuck_currency.block.property.ComputerOpenScreenProperty;
 import net.rupyberstudios.minebuck_currency.item.ModItems;
 import org.jetbrains.annotations.Nullable;
 
 public class ComputerBlock extends BlockWithEntity implements BlockEntityProvider {
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
-    private static final BooleanProperty ON = BooleanProperty.of("on");
+    public static final BooleanProperty ON = BooleanProperty.of("on");
+    public static final ComputerOpenScreenProperty OPEN_SCREEN = ComputerOpenScreenProperty.of("open_screen");
     private static final VoxelShape NORTH_SHAPE = VoxelShapes.union(
             Block.createCuboidShape(0, 0, 3, 16, 16, 7),
             Block.createCuboidShape(1, 0, 7, 15, 1, 14));
@@ -43,13 +49,16 @@ public class ComputerBlock extends BlockWithEntity implements BlockEntityProvide
     @Override
     @SuppressWarnings("deprecation")
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        world.setBlockState(pos, state.with(ON, true));
-        if(!world.isClient && player.getStackInHand(hand).getItem() == ModItems.CARD) {
-            NamedScreenHandlerFactory screenHandlerFactory = (ComputerBlockEntity)world.getBlockEntity(pos);
-            if(screenHandlerFactory != null) player.openHandledScreen(screenHandlerFactory);
-            return ActionResult.SUCCESS;
+        ItemStack heldItem = player.getStackInHand(hand);
+        if(world.isClient || heldItem.getItem() != ModItems.CARD || state.get(ON))
+            return ActionResult.FAIL;
+        state = state.with(ON, true);
+        if(heldItem.getNbt() == null || !heldItem.getNbt().contains("id")) {
+            world.setBlockState(pos, state.with(OPEN_SCREEN, ComputerOpenScreen.ACTIVATE_CARD));
         }
-        return ActionResult.FAIL;
+        ExtendedScreenHandlerFactory screenHandlerFactory = (ComputerBlockEntity)world.getBlockEntity(pos);
+        if(screenHandlerFactory != null) player.openHandledScreen(screenHandlerFactory);
+        return ActionResult.SUCCESS;
     }
 
     @Override
@@ -83,7 +92,7 @@ public class ComputerBlock extends BlockWithEntity implements BlockEntityProvide
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(FACING, ON);
+        builder.add(FACING, ON, OPEN_SCREEN);
     }
 
     @Override

@@ -1,10 +1,16 @@
 package net.rupyberstudios.minebuck_currency;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
+import net.fabricmc.fabric.impl.client.rendering.BlockEntityRendererRegistryImpl;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
+import net.rupyberstudios.minebuck_currency.block.entity.ModBlockEntities;
+import net.rupyberstudios.minebuck_currency.block.entity.client.ComputerBlockEntityRenderer;
 import net.rupyberstudios.minebuck_currency.item.ModItems;
 import net.rupyberstudios.minebuck_currency.item.custom.CardItem;
+import net.rupyberstudios.minebuck_currency.networking.ModMessages;
 import net.rupyberstudios.minebuck_currency.screen.ComputerActivateCardScreen;
 import net.rupyberstudios.minebuck_currency.screen.ModScreenHandlers;
 import org.slf4j.Logger;
@@ -28,6 +34,10 @@ public class MinebuckCurrencyClient implements ClientModInitializer {
         );
 
         HandledScreens.register(ModScreenHandlers.COMPUTER_ACTIVATE_CARD_SCREEN_HANDLER, ComputerActivateCardScreen::new);
+
+        BlockEntityRendererFactories.register(ModBlockEntities.COMPUTER, ComputerBlockEntityRenderer::new);
+
+        ModMessages.registerS2CPackets();
 
         LOGGER.info("Initializing client");
     }

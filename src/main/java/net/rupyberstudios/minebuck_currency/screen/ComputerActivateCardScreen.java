@@ -11,7 +11,7 @@ import net.rupyberstudios.minebuck_currency.MinebuckCurrency;
 
 public class ComputerActivateCardScreen extends HandledScreen<ComputerActivateCardScreenHandler> {
     private static final Identifier TEXTURE = new Identifier(MinebuckCurrency.MOD_ID,
-            "textures/gui/computer.png");
+            "textures/gui/container/computer_activate_card.png");
 
     public ComputerActivateCardScreen(ComputerActivateCardScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
