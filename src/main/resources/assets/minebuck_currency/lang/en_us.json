@@ -1,6 +1,9 @@
 {
   "item_group.minebuck_currency.minebuck_currency": "Ⓜinebuck Currency",
 
+  "block.minebuck_currency.computer": "Computer",
+  "container.minebuck_currency.computer": "Computer",
+
   "item.minebuck_currency.coin_1": "1Ⓜ Coin",
   "item.minebuck_currency.coin_2": "2Ⓜ Coin",
   "item.minebuck_currency.banknote_5": "5Ⓜ Banknote",

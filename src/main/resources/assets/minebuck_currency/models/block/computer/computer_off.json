@@ -1,0 +1,6 @@
+{
+	"parent": "minebuck_currency:block/computer/computer",
+	"textures": {
+		"computer": "minebuck_currency:block/computer/computer_off"
+	}
+}

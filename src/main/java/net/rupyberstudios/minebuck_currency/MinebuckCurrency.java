@@ -4,9 +4,12 @@ import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.util.WorldSavePath;
+import net.rupyberstudios.minebuck_currency.block.ModBlocks;
+import net.rupyberstudios.minebuck_currency.block.entity.ModBlockEntities;
 import net.rupyberstudios.minebuck_currency.database.DatabaseManagement;
 import net.rupyberstudios.minebuck_currency.item.ModItemGroups;
 import net.rupyberstudios.minebuck_currency.item.ModItems;
+import net.rupyberstudios.minebuck_currency.screen.ModScreenHandlers;
 import org.apache.logging.log4j.core.jmx.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +35,13 @@ public class MinebuckCurrency implements ModInitializer {
 		// Proceed with mild caution.
 		ModItemGroups.buildItemGroups();
 
+		ModBlocks.registerModBlocks();
+
 		ModItems.registerModItems();
+
+		ModBlockEntities.registerBlockEntities();
+
+		ModScreenHandlers.registerScreenHandlers();
 
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
 			Path worldPath = server.getSavePath(WorldSavePath.ROOT);
@@ -53,6 +62,7 @@ public class MinebuckCurrency implements ModInitializer {
 
 		ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
 			try {
+				LOGGER.info("Closing minebuck database connection");
 				connection.close();
 			} catch (SQLException e) {
 				throw new RuntimeException(e);

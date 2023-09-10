@@ -2,8 +2,11 @@ package net.rupyberstudios.minebuck_currency;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
+import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.rupyberstudios.minebuck_currency.item.ModItems;
 import net.rupyberstudios.minebuck_currency.item.custom.CardItem;
+import net.rupyberstudios.minebuck_currency.screen.ComputerActivateCardScreen;
+import net.rupyberstudios.minebuck_currency.screen.ModScreenHandlers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +26,8 @@ public class MinebuckCurrencyClient implements ClientModInitializer {
         ColorProviderRegistry.ITEM.register((stack, tintIndex) ->
                 tintIndex != 0 ? -1 : ((CardItem)stack.getItem()).getColor(stack), ModItems.CARD
         );
+
+        HandledScreens.register(ModScreenHandlers.COMPUTER_ACTIVATE_CARD_SCREEN_HANDLER, ComputerActivateCardScreen::new);
 
         LOGGER.info("Initializing client");
     }

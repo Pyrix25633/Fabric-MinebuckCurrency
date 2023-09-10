@@ -14,5 +14,8 @@ public class DatabaseManagement {
                 next_id INTEGER NOT NULL,
                 PRIMARY KEY (table_name)
                 );""");
+        statement.execute("""
+                INSERT OR IGNORE INTO ids VALUES('cards', 0);
+                """);
     }
 }
