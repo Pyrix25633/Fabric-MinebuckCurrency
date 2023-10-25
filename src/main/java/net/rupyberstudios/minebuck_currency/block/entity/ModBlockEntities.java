@@ -9,10 +9,11 @@ import net.rupyberstudios.minebuck_currency.MinebuckCurrency;
 import net.rupyberstudios.minebuck_currency.block.ModBlocks;
 
 public class ModBlockEntities {
-    public static BlockEntityType<ComputerBlockEntity> COMPUTER;
+    public static final BlockEntityType<ComputerBlockEntity> COMPUTER = Registry.register(Registries.BLOCK_ENTITY_TYPE,
+            new Identifier(MinebuckCurrency.MOD_ID, "computer"),
+            FabricBlockEntityTypeBuilder.create(ComputerBlockEntity::new, ModBlocks.COMPUTER).build());
 
     public static void registerBlockEntities() {
-        COMPUTER = Registry.register(Registries.BLOCK_ENTITY_TYPE, new Identifier(MinebuckCurrency.MOD_ID, "computer"),
-                FabricBlockEntityTypeBuilder.create(ComputerBlockEntity::new, ModBlocks.COMPUTER).build());
+        MinebuckCurrency.LOGGER.info("Registering ModBlockEntities for " + MinebuckCurrency.MOD_ID);
     }
 }

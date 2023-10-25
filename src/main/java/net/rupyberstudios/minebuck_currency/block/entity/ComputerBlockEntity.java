@@ -7,22 +7,47 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.rupyberstudios.minebuck_currency.block.custom.ComputerBlock;
+import net.rupyberstudios.minebuck_currency.block.property.ComputerOpenScreen;
 import net.rupyberstudios.minebuck_currency.networking.packet.ItemStackSyncS2CPacket;
 import net.rupyberstudios.minebuck_currency.screen.ComputerActivateCardScreenHandler;
 import org.jetbrains.annotations.Nullable;
 
 public class ComputerBlockEntity extends BlockEntity implements ExtendedScreenHandlerFactory, ImplementedInventory {
     private final DefaultedList<ItemStack> items = DefaultedList.ofSize(2, ItemStack.EMPTY);
+    public static final int INPUT_SLOT = 0, OUTPUT_SLOT = 1;
+    private final PropertyDelegate propertyDelegate = new PropertyDelegate() {
+        @Override
+        public int get(int index) {
+            return 0;
+        }
+
+        @Override
+        public void set(int index, int value) {
+            assert ComputerBlockEntity.this.world != null;
+            ComputerBlockEntity.this.world.setBlockState(ComputerBlockEntity.this.getPos(), ComputerBlockEntity.this.getCachedState()
+                    .with(ComputerBlock.OPEN_SCREEN, ComputerOpenScreen.OFF)
+                    .with(ComputerBlock.ON, false));
+        }
+
+        @Override
+        public int size() {
+            return 1;
+        }
+    };
 
     public ComputerBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.COMPUTER, pos, state);
+    }
+
+    public PropertyDelegate getPropertyDelegate() {
+        return propertyDelegate;
     }
 
     @Override
@@ -36,16 +61,21 @@ public class ComputerBlockEntity extends BlockEntity implements ExtendedScreenHa
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
-        return new ComputerActivateCardScreenHandler(syncId, playerInventory, this, world, pos, getCachedState());
+        return new ComputerActivateCardScreenHandler(syncId, playerInventory, this);
     }
 
     public ItemStack getRenderStack() {
-        return items.get(0);
+        return items.get(INPUT_SLOT);
     }
 
     public void setInventory(DefaultedList<ItemStack> list) {
         for(int i = 0; i < items.size(); i++)
             items.set(i, list.get(i));
+    }
+
+    @Override
+    public void setStack(int slot, ItemStack stack) {
+        ImplementedInventory.super.setStack(slot, stack);
     }
 
     @Override

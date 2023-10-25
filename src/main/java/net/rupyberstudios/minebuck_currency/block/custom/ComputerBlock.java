@@ -23,6 +23,7 @@ import net.rupyberstudios.minebuck_currency.block.entity.ComputerBlockEntity;
 import net.rupyberstudios.minebuck_currency.block.property.ComputerOpenScreen;
 import net.rupyberstudios.minebuck_currency.block.property.ComputerOpenScreenProperty;
 import net.rupyberstudios.minebuck_currency.item.ModItems;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ComputerBlock extends BlockWithEntity implements BlockEntityProvider {
@@ -48,21 +49,26 @@ public class ComputerBlock extends BlockWithEntity implements BlockEntityProvide
 
     @Override
     @SuppressWarnings("deprecation")
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, @NotNull World world, BlockPos pos, @NotNull PlayerEntity player,
+                              Hand hand, BlockHitResult hit) {
         ItemStack heldItem = player.getStackInHand(hand);
         if(world.isClient || heldItem.getItem() != ModItems.CARD || state.get(ON))
             return ActionResult.FAIL;
         state = state.with(ON, true);
+        boolean openScreen = false;
         if(heldItem.getNbt() == null || !heldItem.getNbt().contains("id")) {
             world.setBlockState(pos, state.with(OPEN_SCREEN, ComputerOpenScreen.ACTIVATE_CARD));
+            openScreen = true;
         }
-        ExtendedScreenHandlerFactory screenHandlerFactory = (ComputerBlockEntity)world.getBlockEntity(pos);
-        if(screenHandlerFactory != null) player.openHandledScreen(screenHandlerFactory);
+        if(openScreen) {
+            ExtendedScreenHandlerFactory screenHandlerFactory = (ComputerBlockEntity)world.getBlockEntity(pos);
+            if(screenHandlerFactory != null) player.openHandledScreen(screenHandlerFactory);
+        }
         return ActionResult.SUCCESS;
     }
 
     @Override
-    public BlockState getPlacementState(ItemPlacementContext ctx) {
+    public BlockState getPlacementState(@NotNull ItemPlacementContext ctx) {
         return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing()).with(ON, false);
     }
 
@@ -81,7 +87,7 @@ public class ComputerBlock extends BlockWithEntity implements BlockEntityProvide
 
     @Override
     @SuppressWarnings("deprecation")
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    public VoxelShape getOutlineShape(@NotNull BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return switch (state.get(FACING)) {
             default -> NORTH_SHAPE;
             case SOUTH -> SOUTH_SHAPE;
@@ -91,19 +97,19 @@ public class ComputerBlock extends BlockWithEntity implements BlockEntityProvide
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.@NotNull Builder<Block, BlockState> builder) {
         builder.add(FACING, ON, OPEN_SCREEN);
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public BlockState rotate(BlockState state, BlockRotation rotation) {
+    public BlockState rotate(@NotNull BlockState state, @NotNull BlockRotation rotation) {
         return state.with(FACING, rotation.rotate(state.get(FACING)));
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public BlockState mirror(BlockState state, BlockMirror mirror) {
+    public BlockState mirror(@NotNull BlockState state, @NotNull BlockMirror mirror) {
         return state.rotate(mirror.getRotation(state.get(FACING)));
     }
 

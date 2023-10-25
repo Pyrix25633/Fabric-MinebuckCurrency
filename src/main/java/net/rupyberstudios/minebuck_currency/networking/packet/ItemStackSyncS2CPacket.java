@@ -16,9 +16,10 @@ import net.minecraft.world.World;
 import net.rupyberstudios.minebuck_currency.MinebuckCurrency;
 import net.rupyberstudios.minebuck_currency.block.entity.ComputerBlockEntity;
 import net.rupyberstudios.minebuck_currency.networking.ModMessages;
+import org.jetbrains.annotations.NotNull;
 
 public class ItemStackSyncS2CPacket {
-    public static void send(World world, DefaultedList<ItemStack> items, BlockPos pos) {
+    public static void send(World world, @NotNull DefaultedList<ItemStack> items, BlockPos pos) {
         PacketByteBuf data = PacketByteBufs.create();
         data.writeInt(items.size());
         for(ItemStack item : items) data.writeItemStack(item);
@@ -28,7 +29,7 @@ public class ItemStackSyncS2CPacket {
     }
 
     public static void receive(MinecraftClient client, ClientPlayNetworkHandler handler,
-                               PacketByteBuf buf, PacketSender responseSender) {
+                               @NotNull PacketByteBuf buf, PacketSender responseSender) {
         int size = buf.readInt();
         DefaultedList<ItemStack> list = DefaultedList.ofSize(size, ItemStack.EMPTY);
         for(int i = 0; i < size; i++)

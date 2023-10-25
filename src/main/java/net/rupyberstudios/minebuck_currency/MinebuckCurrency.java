@@ -6,11 +6,12 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.util.WorldSavePath;
 import net.rupyberstudios.minebuck_currency.block.ModBlocks;
 import net.rupyberstudios.minebuck_currency.block.entity.ModBlockEntities;
-import net.rupyberstudios.minebuck_currency.database.DatabaseManagement;
+import net.rupyberstudios.minebuck_currency.database.DatabaseManager;
+import net.rupyberstudios.minebuck_currency.database.ID;
 import net.rupyberstudios.minebuck_currency.item.ModItemGroups;
 import net.rupyberstudios.minebuck_currency.item.ModItems;
+import net.rupyberstudios.minebuck_currency.networking.ModMessages;
 import net.rupyberstudios.minebuck_currency.screen.ModScreenHandlers;
-import org.apache.logging.log4j.core.jmx.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +34,7 @@ public class MinebuckCurrency implements ModInitializer {
 		// This code runs as soon as Minecraft is in a mod-load-ready state.
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
+
 		ModItemGroups.buildItemGroups();
 
 		ModBlocks.registerModBlocks();
@@ -43,6 +45,8 @@ public class MinebuckCurrency implements ModInitializer {
 
 		ModScreenHandlers.registerScreenHandlers();
 
+		ModMessages.registerC2SPackets();
+
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
 			Path worldPath = server.getSavePath(WorldSavePath.ROOT);
 			String url = "jdbc:sqlite:" + worldPath + "minebuck.db";
@@ -51,7 +55,7 @@ public class MinebuckCurrency implements ModInitializer {
 				MinebuckCurrency.connection = DriverManager.getConnection(url);
 				if(connection != null) {
 					LOGGER.info("Connected to the database");
-					DatabaseManagement.createIDsTable();
+					DatabaseManager.createTables();
 				}
 				else throw new IllegalStateException("Not connected to the minebuck database!");
 			} catch(Exception e) {

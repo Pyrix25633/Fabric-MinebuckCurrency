@@ -3,6 +3,9 @@
 
   "block.minebuck_currency.computer": "Computer",
   "container.minebuck_currency.computer.activate_card": "Activate Ⓑank Card",
+  "container.minebuck_currency.computer.activate_card.pin": "PIN: ",
+  "container.minebuck_currency.computer.activate_card.activate": "Activate",
+  "container.minebuck_currency.computer.activate_card.personal": "Personal: ",
 
   "item.minebuck_currency.coin_1": "1Ⓜ Coin",
   "item.minebuck_currency.coin_2": "2Ⓜ Coin",
@@ -14,6 +17,9 @@
   "item.minebuck_currency.banknote_200": "200Ⓜ Banknote",
 
   "item.minebuck_currency.card": "Ⓑank Card",
+  "item.minebuck_currency.card.tooltip.id": "ID: ",
+  "item.minebuck_currency.card.tooltip.owner.online": "Owner: ",
+  "item.minebuck_currency.card.tooltip.owner.offline": "Owner: §7Offline",
 
   "item.minebuck_currency.receipt": "Receipt"
 }

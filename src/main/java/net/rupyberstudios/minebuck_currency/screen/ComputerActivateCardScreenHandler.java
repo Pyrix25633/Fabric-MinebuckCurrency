@@ -1,52 +1,57 @@
 package net.rupyberstudios.minebuck_currency.screen;
 
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.recipe.RecipeType;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.rupyberstudios.minebuck_currency.block.custom.ComputerBlock;
-import net.rupyberstudios.minebuck_currency.block.property.ComputerOpenScreen;
+import net.rupyberstudios.minebuck_currency.block.entity.ComputerBlockEntity;
+import net.rupyberstudios.minebuck_currency.database.ID;
 import net.rupyberstudios.minebuck_currency.item.ModItems;
 import net.rupyberstudios.minebuck_currency.screen.slot.OutputSlot;
+import org.jetbrains.annotations.NotNull;
 
 public class ComputerActivateCardScreenHandler extends ScreenHandler {
     private final Inventory inventory;
-    private World world;
-    private BlockPos pos;
-    private BlockState state;
+    private final Slot input;
+    private final Slot output;
 
     public ComputerActivateCardScreenHandler(int syncId, PlayerInventory inventory, PacketByteBuf packetByteBuf) {
         this(syncId, inventory, new SimpleInventory(2));
     }
 
-    public ComputerActivateCardScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {
+    public ComputerActivateCardScreenHandler(int syncId, @NotNull PlayerInventory playerInventory, Inventory inventory) {
         super(ModScreenHandlers.COMPUTER_ACTIVATE_CARD_SCREEN_HANDLER, syncId);
         checkSize(inventory, 2);
         this.inventory = inventory;
         inventory.onOpen(playerInventory.player);
 
-        this.addSlot(new Slot(inventory, 0, 8, 52));
-        this.addSlot(new OutputSlot(inventory, 1, 62, 52));
+        this.input = this.addSlot(new Slot(inventory, ComputerBlockEntity.INPUT_SLOT, 8, 21));
+        this.output = this.addSlot(new OutputSlot(inventory, ComputerBlockEntity.OUTPUT_SLOT, 62, 21));
 
         addPlayerInventory(playerInventory);
         addPlayerHotbar(playerInventory);
     }
 
-    public ComputerActivateCardScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory,
-                                             World world, BlockPos pos, BlockState state) {
-        this(syncId, playerInventory, inventory);
-        this.world = world;
-        this.pos = pos;
-        this.state = state;
+    public void activateCard(ID cardId) {
+        ItemStack inputStack = this.input.getStack().copy();
+        ItemStack outputStack = this.output.getStack();
+        if(inputStack.getItem() != ModItems.CARD || !outputStack.isEmpty()) return;
+        NbtCompound cardNbt = inputStack.getNbt();
+        if(cardNbt == null) {
+            cardNbt = new NbtCompound();
+            inputStack.setNbt(cardNbt);
+        }
+        cardNbt.putLong("id", cardId.toLong());
+        this.input.setStack(ItemStack.EMPTY);
+        this.input.markDirty();
+        this.output.setStack(inputStack);
+        this.output.markDirty();
+        this.sendContentUpdates();
     }
 
     @Override
@@ -85,14 +90,13 @@ public class ComputerActivateCardScreenHandler extends ScreenHandler {
 
     @Override
     public void onClosed(PlayerEntity player) {
-        player.getInventory().offerOrDrop(inventory.getStack(0));
-        player.getInventory().offerOrDrop(inventory.getStack(1));
-        if(this.world != null) {
-            world.setBlockState(pos, state.with(ComputerBlock.ON, false)
-                    .with(ComputerBlock.OPEN_SCREEN, ComputerOpenScreen.OFF));
-            inventory.markDirty();
-        }
         super.onClosed(player);
+        if(player.getWorld().isClient) return;
+        player.getInventory().offerOrDrop(inventory.getStack(ComputerBlockEntity.INPUT_SLOT));
+        player.getInventory().offerOrDrop(inventory.getStack(ComputerBlockEntity.OUTPUT_SLOT));
+        if(this.inventory instanceof ComputerBlockEntity computerBlockEntity)
+            computerBlockEntity.getPropertyDelegate().set(0, 0);
+        inventory.markDirty();
     }
 
     @Override
