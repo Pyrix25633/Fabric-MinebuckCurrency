@@ -5,13 +5,11 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.sound.SoundManager;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
@@ -23,8 +21,11 @@ import net.rupyberstudios.minebuck_currency.block.entity.ComputerBlockEntity;
 import net.rupyberstudios.minebuck_currency.database.Hash;
 import net.rupyberstudios.minebuck_currency.item.ModItems;
 import net.rupyberstudios.minebuck_currency.networking.packet.ActivateCardC2SPacket;
+import net.rupyberstudios.minebuck_currency.screen.util.BooleanExtra;
 import net.rupyberstudios.minebuck_currency.screen.util.Position;
 import net.rupyberstudios.minebuck_currency.screen.widget.BaseButtonWidget;
+import net.rupyberstudios.minebuck_currency.screen.widget.ExtraButtonWidget;
+import net.rupyberstudios.minebuck_currency.screen.widget.SwitchableWidget;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 
@@ -39,7 +40,7 @@ public class ComputerActivateCardScreen extends HandledScreen<ComputerActivateCa
     private static final Text PERSONAL_TEXT = Text.translatable("container.minebuck_currency.computer.activate_card.personal");
     private TextFieldWidget pinField;
     private boolean pinFieldEditable;
-    private final ArrayList<BaseButtonWidget> buttons = new ArrayList<>();
+    private final ArrayList<SwitchableWidget> buttons = new ArrayList<>();
     protected Position position;
 
     public ComputerActivateCardScreen(ComputerActivateCardScreenHandler handler, PlayerInventory inventory, Text title) {
@@ -49,7 +50,7 @@ public class ComputerActivateCardScreen extends HandledScreen<ComputerActivateCa
 
     private <T extends ClickableWidget> void addButton(T button) {
         this.addDrawableChild(button);
-        if(button instanceof BaseButtonWidget baseButton)
+        if(button instanceof SwitchableWidget baseButton)
             this.buttons.add(baseButton);
     }
 
@@ -69,7 +70,8 @@ public class ComputerActivateCardScreen extends HandledScreen<ComputerActivateCa
         this.addSelectableChild(this.pinField);
         this.setInitialFocus(this.pinField);
         this.buttons.clear();
-        this.addButton(new PersonalCardButtonWidget(this.position, this.textRenderer));
+        this.addButton(new ExtraButtonWidget(this.position.getX() + 153, this.position.getY() + 48, 60, 166,
+                16, 16, TEXTURE, BooleanExtra.TRUE));
         this.addButton(new ActivateCardButtonWidget(this));
         this.handler.addListener(this);
     }
@@ -169,20 +171,6 @@ public class ComputerActivateCardScreen extends HandledScreen<ComputerActivateCa
     public void onPropertyUpdate(ScreenHandler handler, int property, int value) {}
 
     @Environment(value = EnvType.CLIENT)
-    static class PersonalCardButtonWidget extends BaseButtonWidget {
-        public PersonalCardButtonWidget(@NotNull Position position, TextRenderer textRenderer) {
-            super(position.getX() + 153, position.getY() + 48, 60, 166, 16, 16,
-                    Text.literal(""), TEXTURE, textRenderer);
-            this.disabled = false;
-        }
-
-        @Override
-        public void onPress() {
-            this.disabled = !this.disabled;
-        }
-    }
-
-    @Environment(value = EnvType.CLIENT)
     static class ActivateCardButtonWidget extends BaseButtonWidget {
         private final ComputerActivateCardScreen screen;
         
@@ -196,13 +184,10 @@ public class ComputerActivateCardScreen extends HandledScreen<ComputerActivateCa
         public void onPress() {
             int parsed = this.screen.parsePinField();
             if(this.disabled || parsed == -1 || !this.screen.pinFieldShouldBeEditable()) return;
-            ActivateCardC2SPacket.send(Hash.digest(screen.pinField.getText()), !this.screen.buttons.get(0).isDisabled());
-        }
-
-        @Override
-        public void playDownSound(SoundManager soundManager) {
-            if(!this.disabled)
-                super.playDownSound(soundManager);
+            if(this.screen.buttons.get(0) instanceof ExtraButtonWidget extraButtonWidget) {
+                if(extraButtonWidget.getStatus() instanceof BooleanExtra status)
+                    ActivateCardC2SPacket.send(Hash.digest(screen.pinField.getText()), status.toBoolean());
+            }
         }
     }
 }

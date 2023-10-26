@@ -5,12 +5,13 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.widget.PressableWidget;
+import net.minecraft.client.sound.SoundManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
 
 @Environment(value= EnvType.CLIENT)
-public abstract class BaseButtonWidget extends PressableWidget {
+public abstract class BaseButtonWidget extends SwitchableWidget {
     protected int u, v;
     protected Identifier texture;
     protected boolean disabled;
@@ -27,8 +28,12 @@ public abstract class BaseButtonWidget extends PressableWidget {
     }
 
     @Override
-    public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
-        context.drawTexture(texture, this.getX(), this.getY(), u, v + (this.disabled ? this.height : 0),
+    public void renderButton(@NotNull DrawContext context, int mouseX, int mouseY, float delta) {
+        int u = this.u;
+        int v = this.v;
+        if(this.disabled) v += this.getHeight();
+        else if(this.isMouseOver(mouseX, mouseY)) u += this.getWidth();
+        context.drawTexture(texture, this.getX(), this.getY(), u, v,
                 this.width, this.height);
         context.drawTextWithShadow(this.textRenderer, getMessage(),
                 this.getX() + (getWidth() - this.textRenderer.getWidth(getMessage())) / 2,
@@ -46,5 +51,11 @@ public abstract class BaseButtonWidget extends PressableWidget {
     @Override
     public void appendClickableNarrations(NarrationMessageBuilder builder) {
         this.appendDefaultNarrations(builder);
+    }
+
+    @Override
+    public void playDownSound(SoundManager soundManager) {
+        if(!this.disabled)
+            super.playDownSound(soundManager);
     }
 }
