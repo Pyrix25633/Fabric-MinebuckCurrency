@@ -7,7 +7,6 @@ import net.minecraft.util.WorldSavePath;
 import net.rupyberstudios.minebuck_currency.block.ModBlocks;
 import net.rupyberstudios.minebuck_currency.block.entity.ModBlockEntities;
 import net.rupyberstudios.minebuck_currency.database.DatabaseManager;
-import net.rupyberstudios.minebuck_currency.database.ID;
 import net.rupyberstudios.minebuck_currency.item.ModItemGroups;
 import net.rupyberstudios.minebuck_currency.item.ModItems;
 import net.rupyberstudios.minebuck_currency.networking.ModMessages;

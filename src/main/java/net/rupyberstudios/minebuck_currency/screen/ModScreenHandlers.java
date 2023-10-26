@@ -8,7 +8,7 @@ import net.minecraft.util.Identifier;
 import net.rupyberstudios.minebuck_currency.MinebuckCurrency;
 
 public class ModScreenHandlers {
-    public static ScreenHandlerType<ComputerActivateCardScreenHandler> COMPUTER_ACTIVATE_CARD_SCREEN_HANDLER =
+    public static final ScreenHandlerType<ComputerActivateCardScreenHandler> COMPUTER_ACTIVATE_CARD_SCREEN_HANDLER =
             new ExtendedScreenHandlerType<>(ComputerActivateCardScreenHandler::new);
 
     public static void registerScreenHandlers() {

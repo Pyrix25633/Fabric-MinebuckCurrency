@@ -12,10 +12,10 @@ import org.jetbrains.annotations.NotNull;
 
 @Environment(value= EnvType.CLIENT)
 public abstract class BaseButtonWidget extends SwitchableWidget {
-    protected int u, v;
-    protected Identifier texture;
+    protected final int u, v;
+    protected final Identifier texture;
     protected boolean disabled;
-    protected TextRenderer textRenderer;
+    protected final TextRenderer textRenderer;
 
     public BaseButtonWidget(int x, int y, int u, int v, int width, int height, Text message,
                             Identifier texture, TextRenderer textRenderer) {

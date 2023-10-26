@@ -41,7 +41,7 @@ public class ComputerActivateCardScreen extends HandledScreen<ComputerActivateCa
     private TextFieldWidget pinField;
     private boolean pinFieldEditable;
     private final ArrayList<SwitchableWidget> buttons = new ArrayList<>();
-    protected Position position;
+    protected final Position position;
 
     public ComputerActivateCardScreen(ComputerActivateCardScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);

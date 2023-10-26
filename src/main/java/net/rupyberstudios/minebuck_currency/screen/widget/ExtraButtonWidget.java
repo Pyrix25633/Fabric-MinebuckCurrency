@@ -12,8 +12,8 @@ import org.jetbrains.annotations.NotNull;
 
 @Environment(value= EnvType.CLIENT)
 public class ExtraButtonWidget extends SwitchableWidget {
-    protected int u, v;
-    protected Identifier texture;
+    protected final int u, v;
+    protected final Identifier texture;
     protected boolean disabled;
     private ExtraEnum status;
 

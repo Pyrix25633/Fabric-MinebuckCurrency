@@ -6,17 +6,20 @@ import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Direction;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @FunctionalInterface
 public interface ImplementedInventory extends SidedInventory {
     DefaultedList<ItemStack> getItems();
 
-    static ImplementedInventory of(DefaultedList<ItemStack> items) {
+    @Contract(pure = true)
+    static @NotNull ImplementedInventory of(DefaultedList<ItemStack> items) {
         return () -> items;
     }
 
-    static ImplementedInventory ofSize(int size) {
+    static @NotNull ImplementedInventory ofSize(int size) {
         return of(DefaultedList.ofSize(size, ItemStack.EMPTY));
     }
 
