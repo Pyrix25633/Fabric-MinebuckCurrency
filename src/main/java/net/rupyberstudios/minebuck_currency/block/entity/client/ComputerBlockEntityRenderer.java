@@ -16,6 +16,7 @@ import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.rupyberstudios.minebuck_currency.block.custom.ComputerBlock;
 import net.rupyberstudios.minebuck_currency.block.entity.ComputerBlockEntity;
+import org.jetbrains.annotations.NotNull;
 
 public class ComputerBlockEntityRenderer implements BlockEntityRenderer<ComputerBlockEntity> {
     public ComputerBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
@@ -23,7 +24,7 @@ public class ComputerBlockEntityRenderer implements BlockEntityRenderer<Computer
     }
 
     @Override
-    public void render(ComputerBlockEntity entity, float tickDelta, MatrixStack matrices,
+    public void render(@NotNull ComputerBlockEntity entity, float tickDelta, @NotNull MatrixStack matrices,
                        VertexConsumerProvider vertexConsumers, int light, int overlay) {
         ItemRenderer itemRenderer = MinecraftClient.getInstance().getItemRenderer();
         ItemStack itemStack = entity.getRenderStack();
@@ -49,7 +50,7 @@ public class ComputerBlockEntityRenderer implements BlockEntityRenderer<Computer
         matrices.pop();
     }
 
-    private int getLightLevel(World world, BlockPos pos) {
+    private int getLightLevel(@NotNull World world, BlockPos pos) {
         int bLight = world.getLightLevel(LightType.BLOCK, pos);
         int sLight = world.getLightLevel(LightType.SKY, pos);
         return LightmapTextureManager.pack(bLight, sLight);

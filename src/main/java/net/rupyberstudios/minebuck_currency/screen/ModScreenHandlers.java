@@ -10,9 +10,13 @@ import net.rupyberstudios.minebuck_currency.MinebuckCurrency;
 public class ModScreenHandlers {
     public static final ScreenHandlerType<ComputerActivateCardScreenHandler> COMPUTER_ACTIVATE_CARD_SCREEN_HANDLER =
             new ExtendedScreenHandlerType<>(ComputerActivateCardScreenHandler::new);
+    public static final ScreenHandlerType<ComputerCardBalanceScreenHandler> COMPUTER_CARD_BALANCE_SCREEN_HANDLER =
+            new ExtendedScreenHandlerType<>(ComputerCardBalanceScreenHandler::new);
 
     public static void registerScreenHandlers() {
         Registry.register(Registries.SCREEN_HANDLER, new Identifier(MinebuckCurrency.MOD_ID, "computer_activate_card"),
                 COMPUTER_ACTIVATE_CARD_SCREEN_HANDLER);
+        Registry.register(Registries.SCREEN_HANDLER, new Identifier(MinebuckCurrency.MOD_ID, "computer_card_balance"),
+                COMPUTER_CARD_BALANCE_SCREEN_HANDLER);
     }
 }

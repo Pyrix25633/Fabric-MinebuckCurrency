@@ -6,6 +6,11 @@
   "container.minebuck_currency.computer.activate_card.pin": "PIN: ",
   "container.minebuck_currency.computer.activate_card.activate": "Activate",
   "container.minebuck_currency.computer.activate_card.personal": "Personal: ",
+  "container.minebuck_currency.computer.card_balance": "Ⓑank Card Balance",
+  "container.minebuck_currency.computer.card_balance.balance": "Balance: ",
+  "container.minebuck_currency.computer.card_balance.personal_cards_total_balance": "Personal Cards Total Balance",
+
+  "symbol.minebuck_currency.minebuck": "Ⓜ",
 
   "item.minebuck_currency.coin_1": "1Ⓜ Coin",
   "item.minebuck_currency.coin_2": "2Ⓜ Coin",

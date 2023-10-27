@@ -53,15 +53,11 @@ public class ComputerBlock extends BlockWithEntity implements BlockEntityProvide
         if(world.isClient || heldItem.getItem() != ModItems.CARD || state.get(ON))
             return ActionResult.FAIL;
         state = state.with(ON, true);
-        boolean openScreen = false;
-        if(heldItem.getNbt() == null || !heldItem.getNbt().contains("id")) {
-            world.setBlockState(pos, state.with(OPEN_SCREEN, ComputerOpenScreen.ACTIVATE_CARD));
-            openScreen = true;
-        }
-        if(openScreen) {
-            ExtendedScreenHandlerFactory screenHandlerFactory = (ComputerBlockEntity)world.getBlockEntity(pos);
-            if(screenHandlerFactory != null) player.openHandledScreen(screenHandlerFactory);
-        }
+        ComputerOpenScreen screen = (heldItem.getNbt() == null || !heldItem.getNbt().contains("id")) ?
+                ComputerOpenScreen.ACTIVATE_CARD : ComputerOpenScreen.CARD_BALANCE;
+        world.setBlockState(pos, state.with(OPEN_SCREEN, screen));
+        ExtendedScreenHandlerFactory screenHandlerFactory = (ComputerBlockEntity)world.getBlockEntity(pos);
+        if(screenHandlerFactory != null) player.openHandledScreen(screenHandlerFactory);
         return ActionResult.SUCCESS;
     }
 

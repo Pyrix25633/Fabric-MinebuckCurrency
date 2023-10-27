@@ -17,6 +17,7 @@ import net.rupyberstudios.minebuck_currency.block.custom.ComputerBlock;
 import net.rupyberstudios.minebuck_currency.block.property.ComputerOpenScreen;
 import net.rupyberstudios.minebuck_currency.networking.packet.ItemStackSyncS2CPacket;
 import net.rupyberstudios.minebuck_currency.screen.ComputerActivateCardScreenHandler;
+import net.rupyberstudios.minebuck_currency.screen.ComputerCardBalanceScreenHandler;
 import org.jetbrains.annotations.Nullable;
 
 public class ComputerBlockEntity extends BlockEntity implements ExtendedScreenHandlerFactory, ImplementedInventory {
@@ -55,13 +56,18 @@ public class ComputerBlockEntity extends BlockEntity implements ExtendedScreenHa
         return switch(getCachedState().get(ComputerBlock.OPEN_SCREEN)) {
             case OFF -> Text.literal("");
             case ACTIVATE_CARD -> Text.translatable("container.minebuck_currency.computer.activate_card");
+            case CARD_BALANCE -> Text.translatable("container.minebuck_currency.computer.card_balance");
         };
     }
 
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
-        return new ComputerActivateCardScreenHandler(syncId, playerInventory, this);
+        return switch(getCachedState().get(ComputerBlock.OPEN_SCREEN)) {
+            case OFF -> null;
+            case ACTIVATE_CARD -> new ComputerActivateCardScreenHandler(syncId, playerInventory, this);
+            case CARD_BALANCE -> new ComputerCardBalanceScreenHandler(syncId, playerInventory, this);
+        };
     }
 
     public ItemStack getRenderStack() {

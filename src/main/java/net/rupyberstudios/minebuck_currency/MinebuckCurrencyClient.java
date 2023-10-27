@@ -10,6 +10,7 @@ import net.rupyberstudios.minebuck_currency.item.ModItems;
 import net.rupyberstudios.minebuck_currency.item.custom.CardItem;
 import net.rupyberstudios.minebuck_currency.networking.ModMessages;
 import net.rupyberstudios.minebuck_currency.screen.ComputerActivateCardScreen;
+import net.rupyberstudios.minebuck_currency.screen.ComputerCardBalanceScreen;
 import net.rupyberstudios.minebuck_currency.screen.ModScreenHandlers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,7 @@ public class MinebuckCurrencyClient implements ClientModInitializer {
         );
 
         HandledScreens.register(ModScreenHandlers.COMPUTER_ACTIVATE_CARD_SCREEN_HANDLER, ComputerActivateCardScreen::new);
+        HandledScreens.register(ModScreenHandlers.COMPUTER_CARD_BALANCE_SCREEN_HANDLER, ComputerCardBalanceScreen::new);
 
         BlockEntityRendererFactories.register(ModBlockEntities.COMPUTER, ComputerBlockEntityRenderer::new);
 

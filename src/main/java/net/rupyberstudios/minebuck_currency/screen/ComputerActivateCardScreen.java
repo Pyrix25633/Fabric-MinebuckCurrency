@@ -12,8 +12,6 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.rupyberstudios.minebuck_currency.MinebuckCurrency;
@@ -32,7 +30,7 @@ import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
 
 @Environment(value = EnvType.CLIENT)
-public class ComputerActivateCardScreen extends HandledScreen<ComputerActivateCardScreenHandler> implements ScreenHandlerListener {
+public class ComputerActivateCardScreen extends HandledScreen<ComputerActivateCardScreenHandler> {
     private static final Identifier TEXTURE = new Identifier(MinebuckCurrency.MOD_ID,
             "textures/gui/container/computer_activate_card.png");
     private static final Text PIN_TEXT = Text.translatable("container.minebuck_currency.computer.activate_card.pin");
@@ -41,7 +39,7 @@ public class ComputerActivateCardScreen extends HandledScreen<ComputerActivateCa
     private TextFieldWidget pinField;
     private boolean pinFieldEditable;
     private final ArrayList<SwitchableWidget> buttons = new ArrayList<>();
-    protected final Position position;
+    private final Position position;
 
     public ComputerActivateCardScreen(ComputerActivateCardScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
@@ -73,13 +71,6 @@ public class ComputerActivateCardScreen extends HandledScreen<ComputerActivateCa
         this.addButton(new ExtraButtonWidget(this.position.getX() + 153, this.position.getY() + 48, 60, 166,
                 16, 16, TEXTURE, BooleanExtra.TRUE));
         this.addButton(new ActivateCardButtonWidget(this));
-        this.handler.addListener(this);
-    }
-
-    @Override
-    public void removed() {
-        super.removed();
-        this.handler.removeListener(this);
     }
 
     @Override
@@ -105,12 +96,12 @@ public class ComputerActivateCardScreen extends HandledScreen<ComputerActivateCa
     }
 
     protected void drawForeground(@NotNull DrawContext context, float delta, int mouseX, int mouseY) {
-        context.drawTextWithShadow(this.textRenderer, PIN_TEXT,
+        context.drawText(this.textRenderer, PIN_TEXT,
                 position.getX() + 112 - this.textRenderer.getWidth(PIN_TEXT) - 2,
-                position.getY() + 25, 0xFFFFFF);
-        context.drawTextWithShadow(this.textRenderer, PERSONAL_TEXT,
+                position.getY() + 25, 0x404040, false);
+        context.drawText(this.textRenderer, PERSONAL_TEXT,
                 position.getX() + 156 - this.textRenderer.getWidth(PERSONAL_TEXT) - 2,
-                position.getY() + 52, 0xFFFFFF);
+                position.getY() + 52, 0x404040, false);
         this.pinField.render(context, mouseX, mouseY, delta);
     }
 
@@ -163,12 +154,6 @@ public class ComputerActivateCardScreen extends HandledScreen<ComputerActivateCa
                 (inputStack.getNbt() == null || !inputStack.getNbt().contains("id")) &&
                 outputStack.isEmpty();
     }
-
-    @Override
-    public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack) {}
-
-    @Override
-    public void onPropertyUpdate(ScreenHandler handler, int property, int value) {}
 
     @Environment(value = EnvType.CLIENT)
     static class ActivateCardButtonWidget extends BaseButtonWidget {
