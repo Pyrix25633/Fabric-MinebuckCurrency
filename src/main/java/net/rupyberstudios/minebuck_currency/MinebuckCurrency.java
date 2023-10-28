@@ -3,6 +3,7 @@ package net.rupyberstudios.minebuck_currency;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.util.WorldSavePath;
 import net.rupyberstudios.minebuck_currency.block.ModBlocks;
 import net.rupyberstudios.minebuck_currency.block.entity.ModBlockEntities;
@@ -67,6 +68,14 @@ public class MinebuckCurrency implements ModInitializer {
 			try {
 				LOGGER.info("Closing minebuck database connection");
 				connection.close();
+			} catch (SQLException e) {
+				throw new RuntimeException(e);
+			}
+		});
+
+		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+			try {
+				DatabaseManager.insertOrUpdatePlayer(handler.player.getUuid(), handler.player.getGameProfile().getName());
 			} catch (SQLException e) {
 				throw new RuntimeException(e);
 			}

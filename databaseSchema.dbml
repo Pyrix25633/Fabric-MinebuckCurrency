@@ -1,0 +1,13 @@
+Table cards {
+  id INTEGER [pk]
+  pinHash CHAR(64) [not null]
+  balance LONG [not null, default: 0]
+  ownerId CHAR(36)
+}
+
+Table players {
+  id CHAR(36) [pk]
+  username VARCHAR(16) [not null]
+}
+
+Ref: players.id < cards.ownerId

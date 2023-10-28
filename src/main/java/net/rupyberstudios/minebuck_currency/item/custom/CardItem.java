@@ -17,8 +17,8 @@ import java.util.List;
 
 public class CardItem extends Item implements DyeableItem {
     private static final MutableText ID = Text.translatable("item.minebuck_currency.card.tooltip.id");
-    private static final MutableText OWNER_ONLINE = Text.translatable("item.minebuck_currency.card.tooltip.owner.online");
-    private static final Text OWNER_OFFLINE = Text.translatable("item.minebuck_currency.card.tooltip.owner.offline");
+    private static final MutableText OWNER = Text.translatable("item.minebuck_currency.card.tooltip.owner");
+    private static final Text UNKNOWN_OWNER = Text.translatable("item.minebuck_currency.card.tooltip.owner.unknown");
 
     public CardItem(Settings settings) {
         super(settings);
@@ -49,9 +49,9 @@ public class CardItem extends Item implements DyeableItem {
             String owner = GetCardOwnerPacket.C2S.send(id).read();
             if(owner == null) return;
             if(owner.isEmpty())
-                tooltip.add(OWNER_OFFLINE);
+                tooltip.add(UNKNOWN_OWNER);
             else
-                tooltip.add(OWNER_ONLINE.copy().append(owner));
+                tooltip.add(OWNER.copy().append(owner));
         }
     }
 }

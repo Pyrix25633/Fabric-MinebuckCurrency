@@ -20,6 +20,13 @@ public class DatabaseManager {
                 pinHash CHAR(64) NOT NULL,
                 balance LONG NOT NULL DEFAULT 0,
                 ownerId CHAR(36) NULL,
+                PRIMARY KEY (id),
+                FOREIGN KEY (ownerId) REFERENCES players(id)
+                );""");
+        statement.execute("""
+                CREATE TABLE IF NOT EXISTS players (
+                id CHAR(36),
+                username VARCHAR(16) NOT NULL,
                 PRIMARY KEY (id)
                 );""");
     }
@@ -59,6 +66,7 @@ public class DatabaseManager {
                 SELECT ownerId, balance FROM cards WHERE id=?;""");
         preparedStatement.setLong(1, cardId.toLong());
         ResultSet results = preparedStatement.executeQuery();
+        if(!results.next()) return -1;
         long balance = results.getLong("balance");
         String ownerId = results.getString("ownerId");
         UUID owner = ownerId.isEmpty() ? null : UUID.fromString(ownerId);
@@ -76,5 +84,36 @@ public class DatabaseManager {
             total = total.add(BigInteger.valueOf(balance));
         }
         return total;
+    }
+
+    public static void insertOrUpdatePlayer(@NotNull UUID player, @NotNull String username) throws SQLException {
+        PreparedStatement preparedStatement = MinebuckCurrency.connection.prepareStatement("""
+                SELECT username FROM players WHERE id=?""");
+        preparedStatement.setString(1, player.toString());
+        ResultSet result = preparedStatement.executeQuery();
+        if(!result.next()) {
+            preparedStatement = MinebuckCurrency.connection.prepareStatement("""
+                INSERT INTO players (id, username)
+                VALUES (?, ?);""");
+            preparedStatement.setString(1, player.toString());
+            preparedStatement.setString(2, username);
+            preparedStatement.execute();
+        }
+        else if(!result.getString("username").equals(username)) {
+            preparedStatement = MinebuckCurrency.connection.prepareStatement("""
+                UPDATE players SET username=? WHERE id=?""");
+            preparedStatement.setString(1, username);
+            preparedStatement.setString(2, player.toString());
+            preparedStatement.execute();
+        }
+    }
+
+    public static @NotNull String getPlayerUsername(@NotNull UUID player) throws SQLException {
+        PreparedStatement preparedStatement = MinebuckCurrency.connection.prepareStatement("""
+                SELECT username FROM players WHERE id=?""");
+        preparedStatement.setString(1, player.toString());
+        ResultSet result = preparedStatement.executeQuery();
+        if(!result.next()) return "";
+        return result.getString("username");
     }
 }

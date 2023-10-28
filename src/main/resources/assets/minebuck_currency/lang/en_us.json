@@ -23,8 +23,8 @@
 
   "item.minebuck_currency.card": "Ⓑank Card",
   "item.minebuck_currency.card.tooltip.id": "ID: ",
-  "item.minebuck_currency.card.tooltip.owner.online": "Owner: ",
-  "item.minebuck_currency.card.tooltip.owner.offline": "Owner: §7Offline",
+  "item.minebuck_currency.card.tooltip.owner": "Owner: ",
+  "item.minebuck_currency.card.tooltip.owner.unknown": "Owner: §7Unknown",
 
   "item.minebuck_currency.receipt": "Receipt"
 }

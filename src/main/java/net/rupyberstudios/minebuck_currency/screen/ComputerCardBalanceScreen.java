@@ -8,9 +8,12 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.rupyberstudios.minebuck_currency.MinebuckCurrency;
+import net.rupyberstudios.minebuck_currency.database.ID;
+import net.rupyberstudios.minebuck_currency.networking.packet.GetCardBalancePacket;
 import net.rupyberstudios.minebuck_currency.networking.packet.GetPersonalCardsTotalBalancePacket;
 import net.rupyberstudios.minebuck_currency.screen.util.Position;
 import org.jetbrains.annotations.NotNull;
@@ -23,13 +26,17 @@ public class ComputerCardBalanceScreen extends HandledScreen<ComputerCardBalance
     private static final Text SYMBOL_TEXT = Text.translatable("symbol.minebuck_currency.minebuck");
     private static final Text PERSONAL_CARDS_TOTAL_BALANCE =
             Text.translatable("container.minebuck_currency.computer.card_balance.personal_cards_total_balance");
-    private Text balance = Text.literal("?").append(SYMBOL_TEXT);
-    private Text personalCardsTotalBalance = Text.literal("?").append(SYMBOL_TEXT);
+    private static final Text DEFAULT_TEXT = Text.literal("?").append(SYMBOL_TEXT);
     private final Position position;
+    private Text balance, personalCardsTotalBalance;
+    private ID balanceId;
 
     public ComputerCardBalanceScreen(ComputerCardBalanceScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
         this.position = new Position(0, 0);
+        this.balance = DEFAULT_TEXT.copy();
+        this.personalCardsTotalBalance = DEFAULT_TEXT.copy();
+        this.balanceId = null;
     }
 
     @Override
@@ -37,7 +44,7 @@ public class ComputerCardBalanceScreen extends HandledScreen<ComputerCardBalance
         super.init();
         titleX = (backgroundWidth - textRenderer.getWidth(title)) / 2;
         this.position.setXY((width - backgroundWidth) / 2, (height - backgroundHeight) / 2);
-        if(personalCardsTotalBalance.equals(Text.literal("?").append(SYMBOL_TEXT)))
+        if(personalCardsTotalBalance.equals(DEFAULT_TEXT))
             this.personalCardsTotalBalance = Text.literal(GetPersonalCardsTotalBalancePacket.C2S.send().read().toString())
                     .append(SYMBOL_TEXT);
     }
@@ -51,12 +58,15 @@ public class ComputerCardBalanceScreen extends HandledScreen<ComputerCardBalance
         context.drawText(this.textRenderer, BALANCE_TEXT,
                 position.getX() + 30,
                 position.getY() + 25, 0x404040, false);
+        context.drawText(this.textRenderer, balance,
+                position.getX() + this.backgroundWidth - this.textRenderer.getWidth(balance) - 6,
+                position.getY() + 25, 0x404040, false);
         context.drawText(this.textRenderer, PERSONAL_CARDS_TOTAL_BALANCE,
                 (this.width - this.textRenderer.getWidth(PERSONAL_CARDS_TOTAL_BALANCE)) / 2,
-                position.getY() + 45, 0x404040, false);
+                position.getY() + 44, 0x404040, false);
         context.drawText(this.textRenderer, personalCardsTotalBalance,
                 (this.width - this.textRenderer.getWidth(personalCardsTotalBalance)) / 2,
-                position.getY() + 56, 0x404040, false);
+                position.getY() + 58, 0x404040, false);
     }
 
     @Override
@@ -78,6 +88,19 @@ public class ComputerCardBalanceScreen extends HandledScreen<ComputerCardBalance
     @Override
     public void handledScreenTick() {
         super.handledScreenTick();
-
+        NbtCompound cardNbt = this.handler.getInput().getStack().getNbt();
+        if(cardNbt != null && cardNbt.contains("id")) {
+            ID cardId = new ID(cardNbt.getLong("id"));
+            if(!cardId.equals(this.balanceId)) {
+                this.balanceId = cardId;
+                long balance = GetCardBalancePacket.C2S.send(cardId).read();
+                String balanceString = balance != -1 ? String.valueOf(balance) : "?";
+                this.balance = Text.literal(balanceString).append(SYMBOL_TEXT);
+            }
+        }
+        else {
+            this.balance = DEFAULT_TEXT.copy();
+            this.balanceId = null;
+        }
     }
 }

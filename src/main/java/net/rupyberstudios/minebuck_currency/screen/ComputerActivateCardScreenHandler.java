@@ -30,7 +30,14 @@ public class ComputerActivateCardScreenHandler extends ScreenHandler {
         this.inventory = inventory;
         inventory.onOpen(playerInventory.player);
 
-        this.input = this.addSlot(new Slot(inventory, ComputerBlockEntity.INPUT_SLOT, 8, 21));
+        this.input = this.addSlot(new Slot(inventory, ComputerBlockEntity.INPUT_SLOT, 8, 21) {
+            @Override
+            public boolean canInsert(ItemStack stack) {
+                if(stack.getItem() != ModItems.CARD) return false;
+                NbtCompound nbt = stack.getNbt();
+                return nbt == null || !nbt.contains("id");
+            }
+        });
         this.output = this.addSlot(new OutputSlot(inventory, ComputerBlockEntity.OUTPUT_SLOT, 62, 21));
 
         addPlayerInventory(playerInventory);

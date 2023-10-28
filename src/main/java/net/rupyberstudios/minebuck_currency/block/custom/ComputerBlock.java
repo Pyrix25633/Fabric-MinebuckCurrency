@@ -29,16 +29,16 @@ public class ComputerBlock extends BlockWithEntity implements BlockEntityProvide
     public static final BooleanProperty ON = BooleanProperty.of("on");
     public static final ComputerOpenScreenProperty OPEN_SCREEN = ComputerOpenScreenProperty.of("open_screen");
     private static final VoxelShape NORTH_SHAPE = VoxelShapes.union(
-            Block.createCuboidShape(0, 0, 3, 16, 16, 7),
+            Block.createCuboidShape(0, 0, 3, 16, 14, 7),
             Block.createCuboidShape(1, 0, 7, 15, 1, 14));
     private static final VoxelShape EAST_SHAPE = VoxelShapes.union(
-            Block.createCuboidShape(9, 0, 0, 13, 16, 16),
+            Block.createCuboidShape(9, 0, 0, 13, 14, 16),
             Block.createCuboidShape(2, 0, 1, 9, 1, 15));
     private static final VoxelShape SOUTH_SHAPE = VoxelShapes.union(
-            Block.createCuboidShape(0, 0, 9, 16, 16, 13),
+            Block.createCuboidShape(0, 0, 9, 16, 14, 13),
             Block.createCuboidShape(1, 0, 2, 15, 1, 9));
     private static final VoxelShape WEST_SHAPE = VoxelShapes.union(
-            Block.createCuboidShape(3, 0, 0, 7, 16, 16),
+            Block.createCuboidShape(3, 0, 0, 7, 14, 16),
             Block.createCuboidShape(7, 0, 1, 14, 1, 15));
 
     public ComputerBlock(Settings settings) {

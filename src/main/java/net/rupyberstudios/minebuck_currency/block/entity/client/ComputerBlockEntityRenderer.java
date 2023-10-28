@@ -30,10 +30,10 @@ public class ComputerBlockEntityRenderer implements BlockEntityRenderer<Computer
         ItemStack itemStack = entity.getRenderStack();
         matrices.push();
         switch(entity.getCachedState().get(ComputerBlock.FACING)) {
-            case NORTH -> matrices.translate(0.5F, 0.7F, 0.155F);
-            case EAST -> matrices.translate(0.845F, 0.7F, 0.5F);
-            case SOUTH -> matrices.translate(0.5F, 0.7F, 0.845F);
-            case WEST -> matrices.translate(0.155F, 0.7F, 0.5F);
+            case NORTH -> matrices.translate(0.5F, 0.56F, 0.155F);
+            case EAST -> matrices.translate(0.845F, 0.56F, 0.5F);
+            case SOUTH -> matrices.translate(0.5F, 0.56F, 0.845F);
+            case WEST -> matrices.translate(0.155F, 0.56F, 0.5F);
         }
         switch(entity.getCachedState().get(ComputerBlock.FACING)) {
             case NORTH -> matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(0));

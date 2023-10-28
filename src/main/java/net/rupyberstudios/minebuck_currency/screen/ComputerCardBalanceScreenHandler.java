@@ -5,6 +5,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
@@ -26,7 +27,14 @@ public class ComputerCardBalanceScreenHandler extends ScreenHandler {
         this.inventory = inventory;
         inventory.onOpen(playerInventory.player);
 
-        this.input = this.addSlot(new Slot(inventory, ComputerBlockEntity.INPUT_SLOT, 8, 21));
+        this.input = this.addSlot(new Slot(inventory, ComputerBlockEntity.INPUT_SLOT, 8, 21) {
+            @Override
+            public boolean canInsert(ItemStack stack) {
+                if(stack.getItem() != ModItems.CARD) return false;
+                NbtCompound nbt = stack.getNbt();
+                return nbt != null && nbt.contains("id");
+            }
+        });
 
         addPlayerInventory(playerInventory);
         addPlayerHotbar(playerInventory);

@@ -2,6 +2,7 @@ package net.rupyberstudios.minebuck_currency.database;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 
@@ -19,7 +20,8 @@ public class ID {
         this.id = id;
     }
 
-    public boolean equals(@NotNull ID other) {
+    public boolean equals(@Nullable ID other) {
+        if(other == null) return false;
         return this.id == other.id;
     }
 

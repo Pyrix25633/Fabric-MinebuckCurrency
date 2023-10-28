@@ -39,10 +39,7 @@ public class GetCardOwnerPacket {
                 String owner = "";
                 boolean personal = false;
                 if(ownerId != null) {
-                    ServerPlayerEntity ownerPlayer = server.getPlayerManager().getPlayer(ownerId);
-                    if(ownerPlayer != null) {
-                        owner = ownerPlayer.getGameProfile().getName();
-                    }
+                    owner = DatabaseManager.getPlayerUsername(ownerId);
                     personal = true;
                 }
                 S2C.send(owner, personal, buf.readInt(), player);
