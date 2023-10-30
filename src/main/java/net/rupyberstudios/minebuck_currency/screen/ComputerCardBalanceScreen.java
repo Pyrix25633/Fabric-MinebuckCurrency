@@ -12,6 +12,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.rupyberstudios.minebuck_currency.MinebuckCurrency;
+import net.rupyberstudios.minebuck_currency.config.ModConfigs;
 import net.rupyberstudios.minebuck_currency.database.ID;
 import net.rupyberstudios.minebuck_currency.networking.packet.GetCardBalancePacket;
 import net.rupyberstudios.minebuck_currency.networking.packet.GetPersonalCardsTotalBalancePacket;
@@ -20,8 +21,10 @@ import org.jetbrains.annotations.NotNull;
 
 @Environment(value = EnvType.CLIENT)
 public class ComputerCardBalanceScreen extends HandledScreen<ComputerCardBalanceScreenHandler> {
-    private static final Identifier TEXTURE = new Identifier(MinebuckCurrency.MOD_ID,
-            "textures/gui/container/computer_card_balance.png");
+    private static final Identifier TEXTURE = ModConfigs.classicGui ?
+            new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/computer_card_balance_classic.png") :
+            new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/computer_card_balance.png");
+    private static final int TEXT_COLOR = ModConfigs.classicGui ? 0x404040 : 0xd6d6df;
     private static final Text BALANCE_TEXT = Text.translatable("container.minebuck_currency.computer.card_balance.balance");
     private static final Text SYMBOL_TEXT = Text.translatable("symbol.minebuck_currency.minebuck");
     private static final Text PERSONAL_CARDS_TOTAL_BALANCE =
@@ -54,19 +57,19 @@ public class ComputerCardBalanceScreen extends HandledScreen<ComputerCardBalance
         this.init(client, width, height);
     }
 
-    protected void drawForeground(@NotNull DrawContext context, float delta, int mouseX, int mouseY) {
-        context.drawText(this.textRenderer, BALANCE_TEXT,
-                position.getX() + 30,
-                position.getY() + 25, 0x404040, false);
+    @Override
+    protected void drawForeground(@NotNull DrawContext context, int mouseX, int mouseY) {
+        context.drawText(this.textRenderer, this.title, this.titleX, this.titleY, TEXT_COLOR, false);
+        context.drawText(this.textRenderer, this.playerInventoryTitle, this.playerInventoryTitleX, this.playerInventoryTitleY, TEXT_COLOR, false);
+        context.drawText(this.textRenderer, BALANCE_TEXT, 30, 25, TEXT_COLOR, false);
         context.drawText(this.textRenderer, balance,
-                position.getX() + this.backgroundWidth - this.textRenderer.getWidth(balance) - 6,
-                position.getY() + 25, 0x404040, false);
+                this.backgroundWidth - this.textRenderer.getWidth(balance) - 6, 25, TEXT_COLOR, false);
         context.drawText(this.textRenderer, PERSONAL_CARDS_TOTAL_BALANCE,
-                (this.width - this.textRenderer.getWidth(PERSONAL_CARDS_TOTAL_BALANCE)) / 2,
-                position.getY() + 44, 0x404040, false);
+                (this.backgroundWidth - this.textRenderer.getWidth(PERSONAL_CARDS_TOTAL_BALANCE)) / 2,
+                44, TEXT_COLOR, false);
         context.drawText(this.textRenderer, personalCardsTotalBalance,
-                (this.width - this.textRenderer.getWidth(personalCardsTotalBalance)) / 2,
-                position.getY() + 58, 0x404040, false);
+                (this.backgroundWidth - this.textRenderer.getWidth(personalCardsTotalBalance)) / 2,
+                58, TEXT_COLOR, false);
     }
 
     @Override
@@ -81,7 +84,6 @@ public class ComputerCardBalanceScreen extends HandledScreen<ComputerCardBalance
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         renderBackground(context);
         super.render(context, mouseX, mouseY, delta);
-        drawForeground(context, delta, mouseX, mouseY);
         drawMouseoverTooltip(context, mouseX, mouseY);
     }
 

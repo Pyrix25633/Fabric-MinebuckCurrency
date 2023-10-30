@@ -16,6 +16,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.rupyberstudios.minebuck_currency.MinebuckCurrency;
 import net.rupyberstudios.minebuck_currency.block.entity.ComputerBlockEntity;
+import net.rupyberstudios.minebuck_currency.config.ModConfigs;
 import net.rupyberstudios.minebuck_currency.database.Hash;
 import net.rupyberstudios.minebuck_currency.item.ModItems;
 import net.rupyberstudios.minebuck_currency.networking.packet.ActivateCardC2SPacket;
@@ -31,8 +32,10 @@ import java.util.ArrayList;
 
 @Environment(value = EnvType.CLIENT)
 public class ComputerActivateCardScreen extends HandledScreen<ComputerActivateCardScreenHandler> {
-    private static final Identifier TEXTURE = new Identifier(MinebuckCurrency.MOD_ID,
-            "textures/gui/container/computer_activate_card.png");
+    private static final Identifier TEXTURE = ModConfigs.classicGui ?
+            new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/computer_activate_card_classic.png") :
+            new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/computer_activate_card.png");
+    private static final int TEXT_COLOR = ModConfigs.classicGui ? 0x404040 : 0xd6d6df;
     private static final Text PIN_TEXT = Text.translatable("container.minebuck_currency.computer.activate_card.pin");
     private static final Text ACTIVATE_TEXT = Text.translatable("container.minebuck_currency.computer.activate_card.activate");
     private static final Text PERSONAL_TEXT = Text.translatable("container.minebuck_currency.computer.activate_card.personal");
@@ -95,14 +98,16 @@ public class ComputerActivateCardScreen extends HandledScreen<ComputerActivateCa
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
-    protected void drawForeground(@NotNull DrawContext context, float delta, int mouseX, int mouseY) {
+    @Override
+    protected void drawForeground(@NotNull DrawContext context, int mouseX, int mouseY) {
+        context.drawText(this.textRenderer, this.title, this.titleX, this.titleY, TEXT_COLOR, false);
+        context.drawText(this.textRenderer, this.playerInventoryTitle, this.playerInventoryTitleX, this.playerInventoryTitleY, TEXT_COLOR, false);
         context.drawText(this.textRenderer, PIN_TEXT,
-                position.getX() + 112 - this.textRenderer.getWidth(PIN_TEXT) - 2,
-                position.getY() + 25, 0x404040, false);
+                112 - this.textRenderer.getWidth(PIN_TEXT) - 2,
+                25, TEXT_COLOR, false);
         context.drawText(this.textRenderer, PERSONAL_TEXT,
-                position.getX() + 156 - this.textRenderer.getWidth(PERSONAL_TEXT) - 2,
-                position.getY() + 52, 0x404040, false);
-        this.pinField.render(context, mouseX, mouseY, delta);
+                156 - this.textRenderer.getWidth(PERSONAL_TEXT) - 2,
+                52, TEXT_COLOR, false);
     }
 
     @Override
@@ -119,7 +124,7 @@ public class ComputerActivateCardScreen extends HandledScreen<ComputerActivateCa
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         renderBackground(context);
         super.render(context, mouseX, mouseY, delta);
-        drawForeground(context, delta, mouseX, mouseY);
+        this.pinField.render(context, mouseX, mouseY, delta);
         drawMouseoverTooltip(context, mouseX, mouseY);
     }
 
