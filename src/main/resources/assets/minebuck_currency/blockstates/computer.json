@@ -57,7 +57,8 @@
         "model": "minebuck_currency:block/computer/computer_on",
         "y": 180
       }
-    }, {
+    },
+    {
       "when": {
         "facing": "west",
         "on": false

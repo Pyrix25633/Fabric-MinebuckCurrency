@@ -1,9 +1,12 @@
 package net.rupyberstudios.minebuck_currency;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
+import net.rupyberstudios.minebuck_currency.block.ModBlocks;
 import net.rupyberstudios.minebuck_currency.block.entity.ModBlockEntities;
 import net.rupyberstudios.minebuck_currency.block.entity.client.ComputerBlockEntityRenderer;
 import net.rupyberstudios.minebuck_currency.item.ModItems;
@@ -38,6 +41,8 @@ public class MinebuckCurrencyClient implements ClientModInitializer {
         BlockEntityRendererFactories.register(ModBlockEntities.COMPUTER, ComputerBlockEntityRenderer::new);
 
         ModMessages.registerS2CPackets();
+
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.VENDING_MACHINE, RenderLayer.getCutout());
 
         LOGGER.info("Initializing client");
     }
