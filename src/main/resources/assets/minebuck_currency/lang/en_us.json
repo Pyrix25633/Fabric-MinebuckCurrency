@@ -10,6 +10,8 @@
   "container.minebuck_currency.computer.card_balance.balance": "Balance: ",
   "container.minebuck_currency.computer.card_balance.personal_cards_total_balance": "Personal Cards Total Balance",
 
+  "block.minebuck_currency.automated_teller_machine": "Automated Teller Machine",
+
   "block.minebuck_currency.vending_machine": "Vending Machine",
 
   "symbol.minebuck_currency.minebuck": "Ⓜ",

@@ -11,6 +11,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.rupyberstudios.minebuck_currency.MinebuckCurrency;
+import net.rupyberstudios.minebuck_currency.block.custom.AutomatedTellerMachineBlock;
 import net.rupyberstudios.minebuck_currency.block.custom.ComputerBlock;
 import net.rupyberstudios.minebuck_currency.block.custom.VendingMachineBlock;
 import net.rupyberstudios.minebuck_currency.item.ModItemGroups;
@@ -18,6 +19,8 @@ import net.rupyberstudios.minebuck_currency.item.ModItemGroups;
 public class ModBlocks {
     public static final Block COMPUTER = registerBlock("computer",
             new ComputerBlock(FabricBlockSettings.copyOf(Blocks.STONE).breakInstantly().nonOpaque()));
+    public static final Block AUTOMATED_TELLER_MACHINE = registerBlock("automated_teller_machine",
+            new AutomatedTellerMachineBlock(FabricBlockSettings.copyOf(Blocks.STONE).breakInstantly().nonOpaque()));
     public static final Block VENDING_MACHINE = registerBlock("vending_machine",
             new VendingMachineBlock(FabricBlockSettings.copyOf(Blocks.STONE).breakInstantly().nonOpaque()));
 
