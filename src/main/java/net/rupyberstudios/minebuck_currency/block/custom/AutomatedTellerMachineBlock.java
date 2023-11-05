@@ -114,6 +114,6 @@ public class AutomatedTellerMachineBlock extends BlockWithEntity implements Bloc
     @Nullable
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new ComputerBlockEntity(pos, state);
+        return new AutomatedTellerMachineBlockEntity(pos, state);
     }
 }

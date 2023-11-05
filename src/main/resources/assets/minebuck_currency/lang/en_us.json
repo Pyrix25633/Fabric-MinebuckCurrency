@@ -11,6 +11,11 @@
   "container.minebuck_currency.computer.card_balance.personal_cards_total_balance": "Personal Cards Total Balance",
 
   "block.minebuck_currency.automated_teller_machine": "Automated Teller Machine",
+  "container.minebuck_currency.automated_teller_machine": "Automated Teller Machine",
+  "container.minebuck_currency.automated_teller_machine.pin": "PIN: ",
+  "container.minebuck_currency.automated_teller_machine.amount": "Amount: ",
+  "container.minebuck_currency.automated_teller_machine.deposit": "Deposit",
+  "container.minebuck_currency.automated_teller_machine.withdraw": "Withdraw",
 
   "block.minebuck_currency.vending_machine": "Vending Machine",
 

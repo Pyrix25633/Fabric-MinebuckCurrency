@@ -17,14 +17,9 @@ import net.minecraft.util.Identifier;
 import net.rupyberstudios.minebuck_currency.MinebuckCurrency;
 import net.rupyberstudios.minebuck_currency.block.entity.ComputerBlockEntity;
 import net.rupyberstudios.minebuck_currency.config.ModConfigs;
-import net.rupyberstudios.minebuck_currency.database.Hash;
 import net.rupyberstudios.minebuck_currency.item.ModItems;
-import net.rupyberstudios.minebuck_currency.networking.packet.ActivateCardC2SPacket;
-import net.rupyberstudios.minebuck_currency.screen.util.BooleanExtra;
-import net.rupyberstudios.minebuck_currency.screen.util.ExtraEnum;
 import net.rupyberstudios.minebuck_currency.screen.util.Position;
 import net.rupyberstudios.minebuck_currency.screen.widget.BaseButtonWidget;
-import net.rupyberstudios.minebuck_currency.screen.widget.ExtraButtonWidget;
 import net.rupyberstudios.minebuck_currency.screen.widget.SwitchableWidget;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
@@ -32,22 +27,25 @@ import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
 
 @Environment(value = EnvType.CLIENT)
-public class ComputerActivateCardScreen extends HandledScreen<ComputerActivateCardScreenHandler> {
+public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerMachineScreenHandler> {
     private static final Identifier TEXTURE = ModConfigs.classicGui ?
-            new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/computer_activate_card_classic.png") :
-            new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/computer_activate_card.png");
+            new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/automated_teller_machine_classic.png") :
+            new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/automated_teller_machine.png");
     private static final int TEXT_COLOR = ModConfigs.classicGui ? 0x404040 : 0xd6d6df;
-    private static final Text PIN_TEXT = Text.translatable("container.minebuck_currency.computer.activate_card.pin");
-    private static final Text ACTIVATE_TEXT = Text.translatable("container.minebuck_currency.computer.activate_card.activate");
-    private static final Text PERSONAL_TEXT = Text.translatable("container.minebuck_currency.computer.activate_card.personal");
-    private TextFieldWidget pinField;
-    private boolean pinFieldEditable;
+    private static final Text PIN_TEXT = Text.translatable("container.minebuck_currency.automated_teller_machine.pin");
+    private static final Text AMOUNT_TEXT = Text.translatable("container.minebuck_currency.automated_teller_machine.amount");
+    private static final Text DEPOSIT_TEXT = Text.translatable("container.minebuck_currency.automated_teller_machine.deposit");
+    private static final Text WITHDRAW_TEXT = Text.translatable("container.minebuck_currency.automated_teller_machine.withdraw");
+    private TextFieldWidget pinField, amountField;
+    private boolean pinFieldEditable, amountFieldEditable;
     private final ArrayList<SwitchableWidget> buttons = new ArrayList<>();
     private final Position position;
 
-    public ComputerActivateCardScreen(ComputerActivateCardScreenHandler handler, PlayerInventory inventory, Text title) {
+    public AutomatedTellerMachineScreen(AutomatedTellerMachineScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
         this.position = new Position(0, 0);
+        this.backgroundHeight = 189;
+        this.playerInventoryTitleY = this.backgroundHeight - 94;
     }
 
     private <T extends ClickableWidget> void addButton(T button) {
@@ -71,19 +69,28 @@ public class ComputerActivateCardScreen extends HandledScreen<ComputerActivateCa
         this.setPinFieldEditable(false);
         this.addSelectableChild(this.pinField);
         this.setInitialFocus(this.pinField);
+        amountField = new TextFieldWidget(this.textRenderer, position.getX() + 112, position.getY() + 25,
+                56, 12, PIN_TEXT);
+        this.amountField.setFocusUnlocked(false);
+        this.amountField.setEditableColor(-1);
+        this.amountField.setUneditableColor(-1);
+        this.amountField.setDrawsBackground(false);
+        this.amountField.setMaxLength(9);
+        this.setAmountFieldEditable(false);
+        this.addSelectableChild(this.amountField);
+        this.setInitialFocus(this.amountField);
         this.buttons.clear();
-        this.addButton(new ExtraButtonWidget(this.position.getX() + 153, this.position.getY() + 48, 60, 166,
-                16, 16, TEXTURE, BooleanExtra.TRUE));
-        this.addButton(new ActivateCardButtonWidget(this));
+        this.addButton(new DepositButtonWidget(this));
+        this.addButton(new WithdrawButtonWidget(this));
     }
 
     @Override
     public void resize(MinecraftClient client, int width, int height) {
         String pin = this.pinField.getText();
-        ExtraEnum personalCard = ((ExtraButtonWidget)this.buttons.get(0)).getStatus();
+        String amount = this.amountField.getText();
         this.init(client, width, height);
         this.pinField.setText(pin);
-        ((ExtraButtonWidget)this.buttons.get(0)).setStatus(personalCard);
+        this.amountField.setText(amount);
     }
 
     @Override
@@ -106,9 +113,9 @@ public class ComputerActivateCardScreen extends HandledScreen<ComputerActivateCa
         context.drawText(this.textRenderer, PIN_TEXT,
                 112 - this.textRenderer.getWidth(PIN_TEXT) - 2,
                 25, TEXT_COLOR, false);
-        context.drawText(this.textRenderer, PERSONAL_TEXT,
-                156 - this.textRenderer.getWidth(PERSONAL_TEXT) - 2,
-                52, TEXT_COLOR, false);
+        context.drawText(this.textRenderer, AMOUNT_TEXT,
+                112 - this.textRenderer.getWidth(AMOUNT_TEXT) - 2,
+                49, TEXT_COLOR, false);
     }
 
     @Override
@@ -119,6 +126,8 @@ public class ComputerActivateCardScreen extends HandledScreen<ComputerActivateCa
         context.drawTexture(TEXTURE, position.getX(), position.getY(), 0, 0, this.backgroundWidth, this.backgroundHeight);
         context.drawTexture(TEXTURE, position.getX() + 109, position.getY() + 21, 0, this.backgroundHeight +
                 (this.pinFieldEditable ? 0 : 16), 60, 16);
+        context.drawTexture(TEXTURE, position.getX() + 109, position.getY() + 45, 0, this.backgroundHeight +
+                (this.amountFieldEditable ? 0 : 16), 60, 16);
     }
 
     @Override
@@ -144,6 +153,11 @@ public class ComputerActivateCardScreen extends HandledScreen<ComputerActivateCa
         this.pinFieldEditable = editable;
     }
 
+    private void setAmountFieldEditable(boolean editable) {
+        this.amountField.setEditable(editable);
+        this.amountFieldEditable = editable;
+    }
+
     public int parsePinField() {
         String pin = this.pinField.getText();
         if(pin == null) return -1;
@@ -162,23 +176,34 @@ public class ComputerActivateCardScreen extends HandledScreen<ComputerActivateCa
     }
 
     @Environment(value = EnvType.CLIENT)
-    static class ActivateCardButtonWidget extends BaseButtonWidget {
-        private final ComputerActivateCardScreen screen;
-        
-        public ActivateCardButtonWidget(@NotNull ComputerActivateCardScreen screen) {
-            super(screen.position.getX() + 7, screen.position.getY() + 45, 0, 198, 90, 22,
-                    ACTIVATE_TEXT, TEXTURE, screen.textRenderer);
+    static class DepositButtonWidget extends BaseButtonWidget {
+        private final AutomatedTellerMachineScreen screen;
+
+        public DepositButtonWidget(@NotNull AutomatedTellerMachineScreen screen) {
+            super(screen.position.getX() + 7, screen.position.getY() + 68, 60, 189, 79, 22,
+                    DEPOSIT_TEXT, TEXTURE, screen.textRenderer);
             this.screen = screen;
         }
 
         @Override
         public void onPress() {
-            int parsed = this.screen.parsePinField();
-            if(this.disabled || parsed == -1 || !this.screen.pinFieldShouldBeEditable()) return;
-            if(this.screen.buttons.get(0) instanceof ExtraButtonWidget extraButtonWidget) {
-                if(extraButtonWidget.getStatus() instanceof BooleanExtra status)
-                    ActivateCardC2SPacket.send(Hash.digest(screen.pinField.getText()), status.toBoolean());
-            }
+
+        }
+    }
+
+    @Environment(value = EnvType.CLIENT)
+    static class WithdrawButtonWidget extends BaseButtonWidget {
+        private final AutomatedTellerMachineScreen screen;
+
+        public WithdrawButtonWidget(@NotNull AutomatedTellerMachineScreen screen) {
+            super(screen.position.getX() + 90, screen.position.getY() + 68, 60, 189, 79, 22,
+                    WITHDRAW_TEXT, TEXTURE, screen.textRenderer);
+            this.screen = screen;
+        }
+
+        @Override
+        public void onPress() {
+
         }
     }
 }
