@@ -8,23 +8,23 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.rupyberstudios.minebuck_currency.config.ModConfigs;
 import org.jetbrains.annotations.NotNull;
 
 @Environment(value= EnvType.CLIENT)
 public abstract class BaseButtonWidget extends SwitchableWidget {
-    private static final int TEXT_COLOR = ModConfigs.classicGui ? 0xFFFFFF : 0xd6d6df;
+    private final int textColor;
     protected final int u, v;
     protected final Identifier texture;
     protected boolean disabled;
     protected final TextRenderer textRenderer;
 
     public BaseButtonWidget(int x, int y, int u, int v, int width, int height, Text message,
-                            Identifier texture, TextRenderer textRenderer) {
+                            Identifier texture, int textColor, TextRenderer textRenderer) {
         super(x, y, width, height, message);
         this.u = u;
         this.v = v;
         this.texture = texture;
+        this.textColor = textColor;
         this.disabled = false;
         this.textRenderer = textRenderer;
     }
@@ -39,7 +39,7 @@ public abstract class BaseButtonWidget extends SwitchableWidget {
                 this.width, this.height);
         context.drawTextWithShadow(this.textRenderer, getMessage(),
                 this.getX() + (getWidth() - this.textRenderer.getWidth(getMessage())) / 2,
-                this.getY() + (getHeight() - 8) / 2, TEXT_COLOR);
+                this.getY() + (getHeight() - 8) / 2, textColor);
     }
 
     public boolean isDisabled() {

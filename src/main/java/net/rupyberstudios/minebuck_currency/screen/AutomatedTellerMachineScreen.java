@@ -28,10 +28,8 @@ import java.util.ArrayList;
 
 @Environment(value = EnvType.CLIENT)
 public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerMachineScreenHandler> {
-    private static final Identifier TEXTURE = ModConfigs.classicGui ?
-            new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/automated_teller_machine_classic.png") :
-            new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/automated_teller_machine.png");
-    private static final int TEXT_COLOR = ModConfigs.classicGui ? 0x404040 : 0xd6d6df;
+    private Identifier texture;
+    private int textColor;
     private static final Text PIN_TEXT = Text.translatable("container.minebuck_currency.automated_teller_machine.pin");
     private static final Text AMOUNT_TEXT = Text.translatable("container.minebuck_currency.automated_teller_machine.amount");
     private static final Text DEPOSIT_TEXT = Text.translatable("container.minebuck_currency.automated_teller_machine.deposit");
@@ -57,6 +55,10 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
     @Override
     protected void init() {
         super.init();
+        texture = ModConfigs.classicGui ?
+                new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/automated_teller_machine_classic.png") :
+                new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/automated_teller_machine.png");
+        textColor = ModConfigs.classicGui ? 0x404040 : 0xd6d6df;
         titleX = (backgroundWidth - textRenderer.getWidth(title)) / 2;
         this.position.setXY((width - backgroundWidth) / 2, (height - backgroundHeight) / 2);
         pinField = new TextFieldWidget(this.textRenderer, position.getX() + 112, position.getY() + 25,
@@ -108,25 +110,25 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
 
     @Override
     protected void drawForeground(@NotNull DrawContext context, int mouseX, int mouseY) {
-        context.drawText(this.textRenderer, this.title, this.titleX, this.titleY, TEXT_COLOR, false);
-        context.drawText(this.textRenderer, this.playerInventoryTitle, this.playerInventoryTitleX, this.playerInventoryTitleY, TEXT_COLOR, false);
+        context.drawText(this.textRenderer, this.title, this.titleX, this.titleY, textColor, false);
+        context.drawText(this.textRenderer, this.playerInventoryTitle, this.playerInventoryTitleX, this.playerInventoryTitleY, textColor, false);
         context.drawText(this.textRenderer, PIN_TEXT,
                 112 - this.textRenderer.getWidth(PIN_TEXT) - 2,
-                25, TEXT_COLOR, false);
+                25, textColor, false);
         context.drawText(this.textRenderer, AMOUNT_TEXT,
                 112 - this.textRenderer.getWidth(AMOUNT_TEXT) - 2,
-                49, TEXT_COLOR, false);
+                49, textColor, false);
     }
 
     @Override
     protected void drawBackground(@NotNull DrawContext context, float delta, int mouseX, int mouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, TEXTURE);
-        context.drawTexture(TEXTURE, position.getX(), position.getY(), 0, 0, this.backgroundWidth, this.backgroundHeight);
-        context.drawTexture(TEXTURE, position.getX() + 109, position.getY() + 21, 0, this.backgroundHeight +
+        RenderSystem.setShaderTexture(0, texture);
+        context.drawTexture(texture, position.getX(), position.getY(), 0, 0, this.backgroundWidth, this.backgroundHeight);
+        context.drawTexture(texture, position.getX() + 109, position.getY() + 21, 0, this.backgroundHeight +
                 (this.pinFieldEditable ? 0 : 16), 60, 16);
-        context.drawTexture(TEXTURE, position.getX() + 109, position.getY() + 45, 0, this.backgroundHeight +
+        context.drawTexture(texture, position.getX() + 109, position.getY() + 45, 0, this.backgroundHeight +
                 (this.amountFieldEditable ? 0 : 16), 60, 16);
     }
 
@@ -181,7 +183,7 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
 
         public DepositButtonWidget(@NotNull AutomatedTellerMachineScreen screen) {
             super(screen.position.getX() + 7, screen.position.getY() + 68, 60, 189, 79, 22,
-                    DEPOSIT_TEXT, TEXTURE, screen.textRenderer);
+                    DEPOSIT_TEXT, screen.texture, screen.textColor, screen.textRenderer);
             this.screen = screen;
         }
 
@@ -197,7 +199,7 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
 
         public WithdrawButtonWidget(@NotNull AutomatedTellerMachineScreen screen) {
             super(screen.position.getX() + 90, screen.position.getY() + 68, 60, 189, 79, 22,
-                    WITHDRAW_TEXT, TEXTURE, screen.textRenderer);
+                    WITHDRAW_TEXT, screen.texture, screen.textColor, screen.textRenderer);
             this.screen = screen;
         }
 

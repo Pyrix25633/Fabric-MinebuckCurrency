@@ -1,4 +1,6 @@
 {
+  "config_screen.minebuck_currency.title": "Config",
+
   "item_group.minebuck_currency.minebuck_currency": "Ⓜinebuck Currency",
 
   "block.minebuck_currency.computer": "Computer",

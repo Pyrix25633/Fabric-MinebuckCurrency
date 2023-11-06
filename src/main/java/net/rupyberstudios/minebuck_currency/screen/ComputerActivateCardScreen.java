@@ -33,10 +33,8 @@ import java.util.ArrayList;
 
 @Environment(value = EnvType.CLIENT)
 public class ComputerActivateCardScreen extends HandledScreen<ComputerActivateCardScreenHandler> {
-    private static final Identifier TEXTURE = ModConfigs.classicGui ?
-            new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/computer_activate_card_classic.png") :
-            new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/computer_activate_card.png");
-    private static final int TEXT_COLOR = ModConfigs.classicGui ? 0x404040 : 0xd6d6df;
+    private Identifier texture;
+    private int textColor;
     private static final Text PIN_TEXT = Text.translatable("container.minebuck_currency.computer.activate_card.pin");
     private static final Text ACTIVATE_TEXT = Text.translatable("container.minebuck_currency.computer.activate_card.activate");
     private static final Text PERSONAL_TEXT = Text.translatable("container.minebuck_currency.computer.activate_card.personal");
@@ -59,6 +57,10 @@ public class ComputerActivateCardScreen extends HandledScreen<ComputerActivateCa
     @Override
     protected void init() {
         super.init();
+        texture = ModConfigs.classicGui ?
+                new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/automated_teller_machine_classic.png") :
+                new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/automated_teller_machine.png");
+        textColor = ModConfigs.classicGui ? 0x404040 : 0xd6d6df;
         titleX = (backgroundWidth - textRenderer.getWidth(title)) / 2;
         this.position.setXY((width - backgroundWidth) / 2, (height - backgroundHeight) / 2);
         pinField = new TextFieldWidget(this.textRenderer, position.getX() + 112, position.getY() + 25,
@@ -73,7 +75,7 @@ public class ComputerActivateCardScreen extends HandledScreen<ComputerActivateCa
         this.setInitialFocus(this.pinField);
         this.buttons.clear();
         this.addButton(new ExtraButtonWidget(this.position.getX() + 153, this.position.getY() + 48, 60, 166,
-                16, 16, TEXTURE, BooleanExtra.TRUE));
+                16, 16, texture, BooleanExtra.TRUE));
         this.addButton(new ActivateCardButtonWidget(this));
     }
 
@@ -101,23 +103,23 @@ public class ComputerActivateCardScreen extends HandledScreen<ComputerActivateCa
 
     @Override
     protected void drawForeground(@NotNull DrawContext context, int mouseX, int mouseY) {
-        context.drawText(this.textRenderer, this.title, this.titleX, this.titleY, TEXT_COLOR, false);
-        context.drawText(this.textRenderer, this.playerInventoryTitle, this.playerInventoryTitleX, this.playerInventoryTitleY, TEXT_COLOR, false);
+        context.drawText(this.textRenderer, this.title, this.titleX, this.titleY, textColor, false);
+        context.drawText(this.textRenderer, this.playerInventoryTitle, this.playerInventoryTitleX, this.playerInventoryTitleY, textColor, false);
         context.drawText(this.textRenderer, PIN_TEXT,
                 112 - this.textRenderer.getWidth(PIN_TEXT) - 2,
-                25, TEXT_COLOR, false);
+                25, textColor, false);
         context.drawText(this.textRenderer, PERSONAL_TEXT,
                 156 - this.textRenderer.getWidth(PERSONAL_TEXT) - 2,
-                52, TEXT_COLOR, false);
+                52, textColor, false);
     }
 
     @Override
     protected void drawBackground(@NotNull DrawContext context, float delta, int mouseX, int mouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, TEXTURE);
-        context.drawTexture(TEXTURE, position.getX(), position.getY(), 0, 0, this.backgroundWidth, this.backgroundHeight);
-        context.drawTexture(TEXTURE, position.getX() + 109, position.getY() + 21, 0, this.backgroundHeight +
+        RenderSystem.setShaderTexture(0, texture);
+        context.drawTexture(texture, position.getX(), position.getY(), 0, 0, this.backgroundWidth, this.backgroundHeight);
+        context.drawTexture(texture, position.getX() + 109, position.getY() + 21, 0, this.backgroundHeight +
                 (this.pinFieldEditable ? 0 : 16), 60, 16);
     }
 
@@ -167,7 +169,7 @@ public class ComputerActivateCardScreen extends HandledScreen<ComputerActivateCa
         
         public ActivateCardButtonWidget(@NotNull ComputerActivateCardScreen screen) {
             super(screen.position.getX() + 7, screen.position.getY() + 45, 0, 198, 90, 22,
-                    ACTIVATE_TEXT, TEXTURE, screen.textRenderer);
+                    ACTIVATE_TEXT, screen.texture, screen.textColor, screen.textRenderer);
             this.screen = screen;
         }
 

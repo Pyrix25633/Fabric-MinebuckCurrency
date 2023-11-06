@@ -21,10 +21,8 @@ import org.jetbrains.annotations.NotNull;
 
 @Environment(value = EnvType.CLIENT)
 public class ComputerCardBalanceScreen extends HandledScreen<ComputerCardBalanceScreenHandler> {
-    private static final Identifier TEXTURE = ModConfigs.classicGui ?
-            new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/computer_card_balance_classic.png") :
-            new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/computer_card_balance.png");
-    private static final int TEXT_COLOR = ModConfigs.classicGui ? 0x404040 : 0xd6d6df;
+    private Identifier texture;
+    private int textColor;
     private static final Text BALANCE_TEXT = Text.translatable("container.minebuck_currency.computer.card_balance.balance");
     private static final Text SYMBOL_TEXT = Text.translatable("symbol.minebuck_currency.minebuck");
     private static final Text PERSONAL_CARDS_TOTAL_BALANCE =
@@ -45,6 +43,10 @@ public class ComputerCardBalanceScreen extends HandledScreen<ComputerCardBalance
     @Override
     protected void init() {
         super.init();
+        texture = ModConfigs.classicGui ?
+                new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/automated_teller_machine_classic.png") :
+                new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/automated_teller_machine.png");
+        textColor = ModConfigs.classicGui ? 0x404040 : 0xd6d6df;
         titleX = (backgroundWidth - textRenderer.getWidth(title)) / 2;
         this.position.setXY((width - backgroundWidth) / 2, (height - backgroundHeight) / 2);
         if(personalCardsTotalBalance.equals(DEFAULT_TEXT))
@@ -59,25 +61,25 @@ public class ComputerCardBalanceScreen extends HandledScreen<ComputerCardBalance
 
     @Override
     protected void drawForeground(@NotNull DrawContext context, int mouseX, int mouseY) {
-        context.drawText(this.textRenderer, this.title, this.titleX, this.titleY, TEXT_COLOR, false);
-        context.drawText(this.textRenderer, this.playerInventoryTitle, this.playerInventoryTitleX, this.playerInventoryTitleY, TEXT_COLOR, false);
-        context.drawText(this.textRenderer, BALANCE_TEXT, 30, 25, TEXT_COLOR, false);
+        context.drawText(this.textRenderer, this.title, this.titleX, this.titleY, textColor, false);
+        context.drawText(this.textRenderer, this.playerInventoryTitle, this.playerInventoryTitleX, this.playerInventoryTitleY, textColor, false);
+        context.drawText(this.textRenderer, BALANCE_TEXT, 30, 25, textColor, false);
         context.drawText(this.textRenderer, balance,
-                this.backgroundWidth - this.textRenderer.getWidth(balance) - 6, 25, TEXT_COLOR, false);
+                this.backgroundWidth - this.textRenderer.getWidth(balance) - 6, 25, textColor, false);
         context.drawText(this.textRenderer, PERSONAL_CARDS_TOTAL_BALANCE,
                 (this.backgroundWidth - this.textRenderer.getWidth(PERSONAL_CARDS_TOTAL_BALANCE)) / 2,
-                44, TEXT_COLOR, false);
+                44, textColor, false);
         context.drawText(this.textRenderer, personalCardsTotalBalance,
                 (this.backgroundWidth - this.textRenderer.getWidth(personalCardsTotalBalance)) / 2,
-                58, TEXT_COLOR, false);
+                58, textColor, false);
     }
 
     @Override
     protected void drawBackground(@NotNull DrawContext context, float delta, int mouseX, int mouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, TEXTURE);
-        context.drawTexture(TEXTURE, position.getX(), position.getY(), 0, 0, this.backgroundWidth, this.backgroundHeight);
+        RenderSystem.setShaderTexture(0, texture);
+        context.drawTexture(texture, position.getX(), position.getY(), 0, 0, this.backgroundWidth, this.backgroundHeight);
     }
 
     @Override
