@@ -1,5 +1,7 @@
 {
-  "config_screen.minebuck_currency.title": "Config",
+  "text.autoconfig.minebuck_currency.title": "Minebuck Currency Config",
+  "text.autoconfig.minebuck_currency.option.classicGui": "Classic GUI",
+  "text.autoconfig.minebuck_currency.option.classicGui.@Tooltip": "If set to true a Minecraft-Style GUI will be used instead of the dark theme one",
 
   "item_group.minebuck_currency.minebuck_currency": "Ⓜinebuck Currency",
 

@@ -7,7 +7,6 @@ import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.rupyberstudios.minebuck_currency.MinebuckCurrency;
 import net.rupyberstudios.minebuck_currency.block.ModBlocks;
-import net.rupyberstudios.minebuck_currency.block.custom.AutomatedTellerMachineBlock;
 
 public class ModBlockEntities {
     public static final BlockEntityType<ComputerBlockEntity> COMPUTER = Registry.register(Registries.BLOCK_ENTITY_TYPE,

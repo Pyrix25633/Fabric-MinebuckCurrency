@@ -19,7 +19,6 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.rupyberstudios.minebuck_currency.block.entity.AutomatedTellerMachineBlockEntity;
 import net.rupyberstudios.minebuck_currency.block.entity.ComputerBlockEntity;
-import net.rupyberstudios.minebuck_currency.block.property.ComputerOpenScreenProperty;
 import net.rupyberstudios.minebuck_currency.item.ModItems;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

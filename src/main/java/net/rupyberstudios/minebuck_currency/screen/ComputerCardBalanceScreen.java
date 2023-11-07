@@ -12,7 +12,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.rupyberstudios.minebuck_currency.MinebuckCurrency;
-import net.rupyberstudios.minebuck_currency.config.ModConfigs;
+import net.rupyberstudios.minebuck_currency.config.ModConfig;
 import net.rupyberstudios.minebuck_currency.database.ID;
 import net.rupyberstudios.minebuck_currency.networking.packet.GetCardBalancePacket;
 import net.rupyberstudios.minebuck_currency.networking.packet.GetPersonalCardsTotalBalancePacket;
@@ -43,10 +43,10 @@ public class ComputerCardBalanceScreen extends HandledScreen<ComputerCardBalance
     @Override
     protected void init() {
         super.init();
-        texture = ModConfigs.classicGui ?
-                new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/automated_teller_machine_classic.png") :
-                new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/automated_teller_machine.png");
-        textColor = ModConfigs.classicGui ? 0x404040 : 0xd6d6df;
+        texture = ModConfig.INSTANCE.classicGui ?
+                new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/computer_card_balance_classic.png") :
+                new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/computer_card_balance.png");
+        textColor = ModConfig.INSTANCE.classicGui ? 0x404040 : 0xd6d6df;
         titleX = (backgroundWidth - textRenderer.getWidth(title)) / 2;
         this.position.setXY((width - backgroundWidth) / 2, (height - backgroundHeight) / 2);
         if(personalCardsTotalBalance.equals(DEFAULT_TEXT))

@@ -14,10 +14,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
-import net.rupyberstudios.minebuck_currency.MinebuckCurrency;
 import net.rupyberstudios.minebuck_currency.block.custom.AutomatedTellerMachineBlock;
 import net.rupyberstudios.minebuck_currency.block.entity.AutomatedTellerMachineBlockEntity;
-import net.rupyberstudios.minebuck_currency.item.ModItems;
 import org.jetbrains.annotations.NotNull;
 
 public class AutomatedTellerMachineBlockEntityRenderer implements BlockEntityRenderer<AutomatedTellerMachineBlockEntity> {

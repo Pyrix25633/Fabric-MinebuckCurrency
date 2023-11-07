@@ -9,7 +9,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
-import net.rupyberstudios.minebuck_currency.block.custom.AutomatedTellerMachineBlock;
 import net.rupyberstudios.minebuck_currency.block.entity.AutomatedTellerMachineBlockEntity;
 import net.rupyberstudios.minebuck_currency.block.entity.ComputerBlockEntity;
 import net.rupyberstudios.minebuck_currency.database.ID;
@@ -103,11 +102,11 @@ public class AutomatedTellerMachineScreenHandler extends ScreenHandler {
     private void addPlayerInventory(PlayerInventory playerInventory) {
         for(int i = 0; i < 3; ++i)
             for(int l = 0; l < 9; ++l)
-                this.addSlot(new Slot(playerInventory, l + i * 9 + 9, 8 + l * 18, 108 + i * 18));
+                this.addSlot(new Slot(playerInventory, l + i * 9 + 9, 8 + l * 18, 107 + i * 18));
     }
 
     private void addPlayerHotbar(PlayerInventory playerInventory) {
         for(int i = 0; i < 9; ++i)
-            this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 166));
+            this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 165));
     }
 }

@@ -16,7 +16,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.rupyberstudios.minebuck_currency.MinebuckCurrency;
 import net.rupyberstudios.minebuck_currency.block.entity.ComputerBlockEntity;
-import net.rupyberstudios.minebuck_currency.config.ModConfigs;
+import net.rupyberstudios.minebuck_currency.config.ModConfig;
 import net.rupyberstudios.minebuck_currency.database.Hash;
 import net.rupyberstudios.minebuck_currency.item.ModItems;
 import net.rupyberstudios.minebuck_currency.networking.packet.ActivateCardC2SPacket;
@@ -57,10 +57,10 @@ public class ComputerActivateCardScreen extends HandledScreen<ComputerActivateCa
     @Override
     protected void init() {
         super.init();
-        texture = ModConfigs.classicGui ?
-                new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/automated_teller_machine_classic.png") :
-                new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/automated_teller_machine.png");
-        textColor = ModConfigs.classicGui ? 0x404040 : 0xd6d6df;
+        texture = ModConfig.INSTANCE.classicGui ?
+                new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/computer_activate_card_classic.png") :
+                new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/computer_activate_card.png");
+        textColor = ModConfig.INSTANCE.classicGui ? 0x404040 : 0xd6d6df;
         titleX = (backgroundWidth - textRenderer.getWidth(title)) / 2;
         this.position.setXY((width - backgroundWidth) / 2, (height - backgroundHeight) / 2);
         pinField = new TextFieldWidget(this.textRenderer, position.getX() + 112, position.getY() + 25,
@@ -169,7 +169,7 @@ public class ComputerActivateCardScreen extends HandledScreen<ComputerActivateCa
         
         public ActivateCardButtonWidget(@NotNull ComputerActivateCardScreen screen) {
             super(screen.position.getX() + 7, screen.position.getY() + 45, 0, 198, 90, 22,
-                    ACTIVATE_TEXT, screen.texture, screen.textColor, screen.textRenderer);
+                    ACTIVATE_TEXT, screen.texture, screen.textRenderer);
             this.screen = screen;
         }
 

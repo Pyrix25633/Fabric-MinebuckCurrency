@@ -14,14 +14,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.rupyberstudios.minebuck_currency.block.custom.AutomatedTellerMachineBlock;
-import net.rupyberstudios.minebuck_currency.block.custom.ComputerBlock;
-import net.rupyberstudios.minebuck_currency.block.custom.VendingMachineBlock;
-import net.rupyberstudios.minebuck_currency.block.property.ComputerOpenScreen;
-import net.rupyberstudios.minebuck_currency.item.ModItems;
 import net.rupyberstudios.minebuck_currency.networking.packet.ItemStackSyncS2CPacket;
 import net.rupyberstudios.minebuck_currency.screen.AutomatedTellerMachineScreenHandler;
-import net.rupyberstudios.minebuck_currency.screen.ComputerActivateCardScreenHandler;
-import net.rupyberstudios.minebuck_currency.screen.ComputerCardBalanceScreenHandler;
 import org.jetbrains.annotations.Nullable;
 
 public class AutomatedTellerMachineBlockEntity extends BlockEntity implements ExtendedScreenHandlerFactory, ImplementedInventory {

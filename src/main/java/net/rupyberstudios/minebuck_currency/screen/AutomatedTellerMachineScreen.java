@@ -16,7 +16,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.rupyberstudios.minebuck_currency.MinebuckCurrency;
 import net.rupyberstudios.minebuck_currency.block.entity.ComputerBlockEntity;
-import net.rupyberstudios.minebuck_currency.config.ModConfigs;
+import net.rupyberstudios.minebuck_currency.config.ModConfig;
 import net.rupyberstudios.minebuck_currency.item.ModItems;
 import net.rupyberstudios.minebuck_currency.screen.util.Position;
 import net.rupyberstudios.minebuck_currency.screen.widget.BaseButtonWidget;
@@ -55,10 +55,10 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
     @Override
     protected void init() {
         super.init();
-        texture = ModConfigs.classicGui ?
+        texture = ModConfig.INSTANCE.classicGui ?
                 new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/automated_teller_machine_classic.png") :
                 new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/automated_teller_machine.png");
-        textColor = ModConfigs.classicGui ? 0x404040 : 0xd6d6df;
+        textColor = ModConfig.INSTANCE.classicGui ? 0x404040 : 0xd6d6df;
         titleX = (backgroundWidth - textRenderer.getWidth(title)) / 2;
         this.position.setXY((width - backgroundWidth) / 2, (height - backgroundHeight) / 2);
         pinField = new TextFieldWidget(this.textRenderer, position.getX() + 112, position.getY() + 25,
@@ -183,7 +183,7 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
 
         public DepositButtonWidget(@NotNull AutomatedTellerMachineScreen screen) {
             super(screen.position.getX() + 7, screen.position.getY() + 68, 60, 189, 79, 22,
-                    DEPOSIT_TEXT, screen.texture, screen.textColor, screen.textRenderer);
+                    DEPOSIT_TEXT, screen.texture, screen.textRenderer);
             this.screen = screen;
         }
 
@@ -199,7 +199,7 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
 
         public WithdrawButtonWidget(@NotNull AutomatedTellerMachineScreen screen) {
             super(screen.position.getX() + 90, screen.position.getY() + 68, 60, 189, 79, 22,
-                    WITHDRAW_TEXT, screen.texture, screen.textColor, screen.textRenderer);
+                    WITHDRAW_TEXT, screen.texture, screen.textRenderer);
             this.screen = screen;
         }
 

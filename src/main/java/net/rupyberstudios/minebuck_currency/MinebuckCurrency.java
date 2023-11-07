@@ -7,7 +7,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.util.WorldSavePath;
 import net.rupyberstudios.minebuck_currency.block.ModBlocks;
 import net.rupyberstudios.minebuck_currency.block.entity.ModBlockEntities;
-import net.rupyberstudios.minebuck_currency.config.ModConfigs;
+import net.rupyberstudios.minebuck_currency.config.ModConfig;
 import net.rupyberstudios.minebuck_currency.database.DatabaseManager;
 import net.rupyberstudios.minebuck_currency.item.ModItemGroups;
 import net.rupyberstudios.minebuck_currency.item.ModItems;
@@ -36,7 +36,7 @@ public class MinebuckCurrency implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
-		ModConfigs.registerConfigs();
+		ModConfig.init();
 
 		ModItemGroups.buildItemGroups();
 
