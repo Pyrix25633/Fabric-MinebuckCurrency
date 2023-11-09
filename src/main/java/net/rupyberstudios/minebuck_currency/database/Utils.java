@@ -4,7 +4,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Pair;
 import net.rupyberstudios.minebuck_currency.item.ModItems;
 import org.jetbrains.annotations.Contract;
@@ -13,8 +12,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 
 public class Utils {
-    public static long countCash(@NotNull Inventory inventory) {
-        long total = 0L;
+    public static int countCash(@NotNull Inventory inventory) {
+        int total = 0;
         for(int i = 0; i < inventory.size(); i++) {
             Item item = inventory.getStack(i).getItem();
             if(item == ModItems.COIN_1) total += 1;
@@ -29,7 +28,7 @@ public class Utils {
         return total;
     }
     
-    public static void removeCash(PlayerInventory inventory, long amount) {
+    public static void removeCash(PlayerInventory inventory, int amount) {
         if(countCash(inventory) < amount || amount <= 0) return;
         HashMap<Integer, HashMap<Integer, Integer>> cash = new HashMap<>();
         cash.put(1, new HashMap<>());
@@ -45,7 +44,7 @@ public class Utils {
             int value = getValue(stack);
             cash.get(value).put(i, stack.getCount() * value);
         }
-        HashMap<Integer, Pair<Integer, Long>> remaining = new HashMap<>();
+        HashMap<Integer, Pair<Integer, Integer>> remaining = new HashMap<>();
         remaining.put(2, calculateRemaining(cash, 2, amount));
         remaining.put(5, calculateRemaining(cash, 5, amount));
         remaining.put(10, calculateRemaining(cash, 10, amount));
@@ -53,7 +52,7 @@ public class Utils {
         remaining.put(50, calculateRemaining(cash, 50, amount));
         remaining.put(100, calculateRemaining(cash, 100, amount));
         remaining.put(200, calculateRemaining(cash, 200, amount));
-        Pair<Integer, Pair<Integer, Long>> best = new Pair<>(1, calculateRemaining(cash, 1, amount));
+        Pair<Integer, Pair<Integer, Integer>> best = new Pair<>(1, calculateRemaining(cash, 1, amount));
         for(int value : remaining.keySet()) {
             if(Math.abs(remaining.get(value).getRight()) < best.getRight().getRight())
                 best = new Pair<>(value, remaining.get(value));
@@ -75,26 +74,50 @@ public class Utils {
             addCash(inventory, -best.getRight().getRight());
     }
 
-    public static void addCash(PlayerInventory inventory, long amount) {
+    public static void addCash(PlayerInventory inventory, int amount) {
         if(amount <= 0) return;
-        int needed = (int)(amount / 200);
-        if(needed > 0) { //TODO
+        int needed = amount / 200;
+        if(needed > 0)
             inventory.offerOrDrop(new ItemStack(ModItems.BANKNOTE_200, needed));
-            addCash(inventory, amount - needed * 200L);
-            return;
-        }
+        amount %= 200;
+        needed = amount / 100;
+        if(needed > 0)
+            inventory.offerOrDrop(new ItemStack(ModItems.BANKNOTE_100, needed));
+        amount %= 100;
+        needed = amount / 50;
+        if(needed > 0)
+            inventory.offerOrDrop(new ItemStack(ModItems.BANKNOTE_50, needed));
+        amount %= 50;
+        needed = amount / 20;
+        if(needed > 0)
+            inventory.offerOrDrop(new ItemStack(ModItems.BANKNOTE_20, needed));
+        amount %= 20;
+        needed = amount / 10;
+        if(needed > 0)
+            inventory.offerOrDrop(new ItemStack(ModItems.BANKNOTE_10, needed));
+        amount %= 10;
+        needed = amount / 5;
+        if(needed > 0)
+            inventory.offerOrDrop(new ItemStack(ModItems.BANKNOTE_50, needed));
+        amount %= 5;
+        needed = amount / 2;
+        if(needed > 0)
+            inventory.offerOrDrop(new ItemStack(ModItems.COIN_2, needed));
+        amount %= 2;
+        if(amount > 0)
+            inventory.offerOrDrop(new ItemStack(ModItems.COIN_1, amount));
     }
 
     @Contract("_, _, _ -> new")
-    private static @NotNull Pair<Integer, Long> calculateRemaining(@NotNull HashMap<Integer, HashMap<Integer, Integer>> cash, int value, long amount) {
+    private static @NotNull Pair<Integer, Integer> calculateRemaining(@NotNull HashMap<Integer, HashMap<Integer, Integer>> cash, int value, int amount) {
         HashMap<Integer, Integer> stacks = cash.get(value);
-        long total = 0L;
+        int total = 0;
         for(int subtotal : stacks.values())
             total += subtotal;
-        int needed = (int)(amount / value);
-        if((total - (long)needed * value) > 0) return new Pair<>(needed, amount - (long) needed * value);
+        int needed = amount / value;
+        if((total - needed * value) > 0) return new Pair<>(needed, amount - needed * value);
         else {
-            int available = (int)(total / value);
+            int available = total / value;
             return new Pair<>(available, amount - total);
         }
     }

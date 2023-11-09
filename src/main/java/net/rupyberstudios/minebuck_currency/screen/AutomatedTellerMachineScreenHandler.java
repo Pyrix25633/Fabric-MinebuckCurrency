@@ -12,12 +12,14 @@ import net.minecraft.screen.slot.Slot;
 import net.rupyberstudios.minebuck_currency.block.entity.AutomatedTellerMachineBlockEntity;
 import net.rupyberstudios.minebuck_currency.block.entity.ComputerBlockEntity;
 import net.rupyberstudios.minebuck_currency.database.ID;
+import net.rupyberstudios.minebuck_currency.database.Utils;
 import net.rupyberstudios.minebuck_currency.item.ModItems;
 import net.rupyberstudios.minebuck_currency.screen.slot.OutputSlot;
 import org.jetbrains.annotations.NotNull;
 
 public class AutomatedTellerMachineScreenHandler extends ScreenHandler {
     private final Inventory inventory;
+    private final PlayerInventory playerInventory;
     private final Slot input;
     private final Slot output;
 
@@ -29,6 +31,7 @@ public class AutomatedTellerMachineScreenHandler extends ScreenHandler {
         super(ModScreenHandlers.AUTOMATED_TELLER_MACHINE_SCREEN_HANDLER, syncId);
         checkSize(inventory, 2);
         this.inventory = inventory;
+        this.playerInventory = playerInventory;
         inventory.onOpen(playerInventory.player);
 
         this.input = this.addSlot(new Slot(inventory, AutomatedTellerMachineBlockEntity.INPUT_SLOT, 8, 21) {
@@ -45,8 +48,8 @@ public class AutomatedTellerMachineScreenHandler extends ScreenHandler {
         addPlayerHotbar(playerInventory);
     }
 
-    public void activateCard(ID cardId) {
-
+    public void withdrawCash(int amount) {
+        Utils.addCash(playerInventory, amount);
     }
 
     @Override
@@ -108,5 +111,13 @@ public class AutomatedTellerMachineScreenHandler extends ScreenHandler {
     private void addPlayerHotbar(PlayerInventory playerInventory) {
         for(int i = 0; i < 9; ++i)
             this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 165));
+    }
+
+    public PlayerInventory getPlayerInventory() {
+        return playerInventory;
+    }
+
+    public Inventory getInventory() {
+        return inventory;
     }
 }

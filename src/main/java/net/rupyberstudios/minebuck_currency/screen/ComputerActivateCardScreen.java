@@ -148,7 +148,7 @@ public class ComputerActivateCardScreen extends HandledScreen<ComputerActivateCa
 
     public int parsePinField() {
         String pin = this.pinField.getText();
-        if(pin == null) return -1;
+        if(pin == null || pin.contains("-")) return -1;
         String string = SharedConstants.stripInvalidChars(pin);
         if(string.length() < 3 || string.length() > 9) return -1;
         try {return Integer.parseInt(pin);}

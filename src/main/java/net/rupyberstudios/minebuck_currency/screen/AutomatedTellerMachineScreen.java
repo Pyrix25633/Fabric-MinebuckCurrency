@@ -15,9 +15,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.rupyberstudios.minebuck_currency.MinebuckCurrency;
+import net.rupyberstudios.minebuck_currency.block.entity.AutomatedTellerMachineBlockEntity;
 import net.rupyberstudios.minebuck_currency.block.entity.ComputerBlockEntity;
 import net.rupyberstudios.minebuck_currency.config.ModConfig;
+import net.rupyberstudios.minebuck_currency.database.Hash;
+import net.rupyberstudios.minebuck_currency.database.ID;
+import net.rupyberstudios.minebuck_currency.database.Utils;
 import net.rupyberstudios.minebuck_currency.item.ModItems;
+import net.rupyberstudios.minebuck_currency.networking.packet.WithdrawCashC2SPacket;
 import net.rupyberstudios.minebuck_currency.screen.util.Position;
 import net.rupyberstudios.minebuck_currency.screen.widget.BaseButtonWidget;
 import net.rupyberstudios.minebuck_currency.screen.widget.SwitchableWidget;
@@ -63,24 +68,22 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
         this.position.setXY((width - backgroundWidth) / 2, (height - backgroundHeight) / 2);
         pinField = new TextFieldWidget(this.textRenderer, position.getX() + 112, position.getY() + 25,
                 56, 12, PIN_TEXT);
-        this.pinField.setFocusUnlocked(false);
+        this.pinField.setFocusUnlocked(true);
         this.pinField.setEditableColor(-1);
         this.pinField.setUneditableColor(-1);
         this.pinField.setDrawsBackground(false);
         this.pinField.setMaxLength(9);
         this.setPinFieldEditable(false);
         this.addSelectableChild(this.pinField);
-        this.setInitialFocus(this.pinField);
-        amountField = new TextFieldWidget(this.textRenderer, position.getX() + 112, position.getY() + 25,
-                56, 12, PIN_TEXT);
-        this.amountField.setFocusUnlocked(false);
+        amountField = new TextFieldWidget(this.textRenderer, position.getX() + 112, position.getY() + 49,
+                56, 12, AMOUNT_TEXT);
+        this.amountField.setFocusUnlocked(true);
         this.amountField.setEditableColor(-1);
         this.amountField.setUneditableColor(-1);
         this.amountField.setDrawsBackground(false);
         this.amountField.setMaxLength(9);
         this.setAmountFieldEditable(false);
         this.addSelectableChild(this.amountField);
-        this.setInitialFocus(this.amountField);
         this.buttons.clear();
         this.addButton(new DepositButtonWidget(this));
         this.addButton(new WithdrawButtonWidget(this));
@@ -105,7 +108,17 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
         if(this.pinField.keyPressed(keyCode, scanCode, modifiers) || this.pinField.isActive()) {
             return true;
         }
+        if(this.amountField.keyPressed(keyCode, scanCode, modifiers) || this.amountField.isActive()) {
+            return true;
+        }
         return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        pinField.setFocused(pinField.isMouseOver(mouseX, mouseY));
+        amountField.setFocused(amountField.isMouseOver(mouseX, mouseY));
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
@@ -143,11 +156,17 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
     @Override
     public void handledScreenTick() {
         super.handledScreenTick();
-        boolean shouldBeEditable = this.pinFieldShouldBeEditable();
-        if(this.pinFieldEditable != shouldBeEditable) this.setPinFieldEditable(shouldBeEditable);
+        boolean pinFieldShouldBeEditable = this.pinFieldShouldBeEditable();
+        if(this.pinFieldEditable != pinFieldShouldBeEditable) this.setPinFieldEditable(pinFieldShouldBeEditable);
         this.pinField.tick();
-        boolean shouldBeDisabled = parsePinField() == -1 || !shouldBeEditable;
-        if(this.buttons.get(1).isDisabled() != shouldBeDisabled) this.buttons.get(1).setDisabled(shouldBeDisabled);
+        boolean amountFieldShouldBeEditable = this.amountFieldShouldBeEditable();
+        if(this.amountFieldEditable != amountFieldShouldBeEditable) this.setAmountFieldEditable(amountFieldShouldBeEditable);
+        this.amountField.tick();
+        int amount = parseAmountField();
+        boolean withdrawShouldBeDisabled = amount == -1 || !amountFieldShouldBeEditable ||
+                amount > Utils.countCash(handler.getPlayerInventory());
+        if(this.buttons.get(1).isDisabled() != withdrawShouldBeDisabled)
+            this.buttons.get(1).setDisabled(withdrawShouldBeDisabled);
     }
 
     private void setPinFieldEditable(boolean editable) {
@@ -162,19 +181,35 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
 
     public int parsePinField() {
         String pin = this.pinField.getText();
-        if(pin == null) return -1;
+        if(pin == null || pin.contains("-")) return -1;
         String string = SharedConstants.stripInvalidChars(pin);
         if(string.length() < 3 || string.length() > 9) return -1;
         try {return Integer.parseInt(pin);}
         catch(NumberFormatException e) {return -1;}
     }
 
+    public int parseAmountField() {
+        String amount = this.amountField.getText();
+        if(amount == null || amount.contains("-")) return -1;
+        String string = SharedConstants.stripInvalidChars(amount);
+        if(string.isEmpty() || string.length() > 9) return -1;
+        try {
+            int parsed = Integer.parseInt(amount);
+            return parsed > 0 ? parsed : -1;
+        }
+        catch(NumberFormatException e) {return -1;}
+    }
+
     public boolean pinFieldShouldBeEditable() {
-        ItemStack inputStack = this.handler.getSlot(ComputerBlockEntity.INPUT_SLOT).getStack();
-        ItemStack outputStack = this.handler.getSlot(ComputerBlockEntity.OUTPUT_SLOT).getStack();
+        ItemStack inputStack = this.handler.getSlot(AutomatedTellerMachineBlockEntity.INPUT_SLOT).getStack();
+        ItemStack outputStack = this.handler.getSlot(AutomatedTellerMachineBlockEntity.OUTPUT_SLOT).getStack();
         return inputStack.getItem() == ModItems.CARD &&
-                (inputStack.getNbt() == null || !inputStack.getNbt().contains("id")) &&
+                (inputStack.getNbt() != null && inputStack.getNbt().contains("id")) &&
                 outputStack.isEmpty();
+    }
+
+    public boolean amountFieldShouldBeEditable() {
+        return pinFieldShouldBeEditable() && parsePinField() != -1;
     }
 
     @Environment(value = EnvType.CLIENT)
@@ -205,7 +240,10 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
 
         @Override
         public void onPress() {
-
+            ItemStack card = screen.handler.getInventory().getStack(AutomatedTellerMachineBlockEntity.INPUT_SLOT);
+            if(card.getNbt() == null || !card.getNbt().contains("id")) return;
+            WithdrawCashC2SPacket.send(new ID(card.getNbt().getLong("id")),
+                    Hash.digest(String.valueOf(screen.parsePinField())), screen.parseAmountField());
         }
     }
 }
