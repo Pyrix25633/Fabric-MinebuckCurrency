@@ -20,4 +20,8 @@ public class ModConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip()
     @Comment("If set to true a Minecraft-Style GUI will be used instead of the dark theme one")
     public boolean classicGui = false;
+
+    @ConfigEntry.Gui.Tooltip()
+    @Comment("If set to true 1x2Ⓜ Coins will be preferred over 2x1Ⓜ Coins when withdrawing 2Ⓜ")
+    public boolean preferHigherValueCash = false;
 }

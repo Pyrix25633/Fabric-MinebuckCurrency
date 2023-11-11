@@ -8,18 +8,21 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.rupyberstudios.minebuck_currency.MinebuckCurrency;
+import net.rupyberstudios.minebuck_currency.database.DatabaseManager;
 import net.rupyberstudios.minebuck_currency.database.ID;
 import net.rupyberstudios.minebuck_currency.networking.ModMessages;
 import net.rupyberstudios.minebuck_currency.screen.AutomatedTellerMachineScreenHandler;
 import org.jetbrains.annotations.NotNull;
 
-public class WithdrawCashC2SPacket {
+import java.util.UUID;
+
+public class DepositCashC2SPacket {
     public static void send(@NotNull ID cardId, String pinHash, int amount) {
         PacketByteBuf data = PacketByteBufs.create();
         data.writeLong(cardId.toLong());
         data.writeString(pinHash);
         data.writeInt(amount);
-        ClientPlayNetworking.send(ModMessages.WITHDRAW_CASH, data);
+        ClientPlayNetworking.send(ModMessages.DEPOSIT_CASH, data);
     }
 
     public static void receive(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler,
@@ -30,8 +33,10 @@ public class WithdrawCashC2SPacket {
             String pinHash = buf.readString();
             int amount = buf.readInt();
             if(player.currentScreenHandler instanceof AutomatedTellerMachineScreenHandler screenHandler) {
-                screenHandler.withdrawCash(amount);
-                //TODO: Remove from balance and create receipt
+                UUID cardOwner = DatabaseManager.getCardOwner(cardId);
+                if(cardOwner != null && cardOwner != player.getUuid()) return;
+                screenHandler.depositCash(amount);
+
             }
         } catch(Exception e) {MinebuckCurrency.LOGGER.error(e.toString());}
     }

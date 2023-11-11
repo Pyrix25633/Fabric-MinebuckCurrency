@@ -12,6 +12,7 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.rupyberstudios.minebuck_currency.MinebuckCurrency;
@@ -22,6 +23,8 @@ import net.rupyberstudios.minebuck_currency.database.Hash;
 import net.rupyberstudios.minebuck_currency.database.ID;
 import net.rupyberstudios.minebuck_currency.database.Utils;
 import net.rupyberstudios.minebuck_currency.item.ModItems;
+import net.rupyberstudios.minebuck_currency.networking.packet.DepositCashC2SPacket;
+import net.rupyberstudios.minebuck_currency.networking.packet.GetCardBalancePacket;
 import net.rupyberstudios.minebuck_currency.networking.packet.WithdrawCashC2SPacket;
 import net.rupyberstudios.minebuck_currency.screen.util.Position;
 import net.rupyberstudios.minebuck_currency.screen.widget.BaseButtonWidget;
@@ -43,12 +46,15 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
     private boolean pinFieldEditable, amountFieldEditable;
     private final ArrayList<SwitchableWidget> buttons = new ArrayList<>();
     private final Position position;
+    private long balance;
+    private ID balanceId;
 
     public AutomatedTellerMachineScreen(AutomatedTellerMachineScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
         this.position = new Position(0, 0);
         this.backgroundHeight = 189;
         this.playerInventoryTitleY = this.backgroundHeight - 94;
+        this.balanceId = null;
     }
 
     private <T extends ClickableWidget> void addButton(T button) {
@@ -68,18 +74,12 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
         this.position.setXY((width - backgroundWidth) / 2, (height - backgroundHeight) / 2);
         pinField = new TextFieldWidget(this.textRenderer, position.getX() + 112, position.getY() + 25,
                 56, 12, PIN_TEXT);
-        this.pinField.setFocusUnlocked(true);
-        this.pinField.setEditableColor(-1);
-        this.pinField.setUneditableColor(-1);
         this.pinField.setDrawsBackground(false);
         this.pinField.setMaxLength(9);
         this.setPinFieldEditable(false);
         this.addSelectableChild(this.pinField);
         amountField = new TextFieldWidget(this.textRenderer, position.getX() + 112, position.getY() + 49,
                 56, 12, AMOUNT_TEXT);
-        this.amountField.setFocusUnlocked(true);
-        this.amountField.setEditableColor(-1);
-        this.amountField.setUneditableColor(-1);
         this.amountField.setDrawsBackground(false);
         this.amountField.setMaxLength(9);
         this.setAmountFieldEditable(false);
@@ -116,8 +116,8 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        pinField.setFocused(pinField.isMouseOver(mouseX, mouseY));
-        amountField.setFocused(amountField.isMouseOver(mouseX, mouseY));
+        pinField.mouseClicked(mouseX, mouseY, button);
+        amountField.mouseClicked(mouseX, mouseY, button);
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
@@ -150,6 +150,7 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
         renderBackground(context);
         super.render(context, mouseX, mouseY, delta);
         this.pinField.render(context, mouseX, mouseY, delta);
+        this.amountField.render(context, mouseX, mouseY, delta);
         drawMouseoverTooltip(context, mouseX, mouseY);
     }
 
@@ -163,8 +164,23 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
         if(this.amountFieldEditable != amountFieldShouldBeEditable) this.setAmountFieldEditable(amountFieldShouldBeEditable);
         this.amountField.tick();
         int amount = parseAmountField();
-        boolean withdrawShouldBeDisabled = amount == -1 || !amountFieldShouldBeEditable ||
-                amount > Utils.countCash(handler.getPlayerInventory());
+        NbtCompound cardNbt = this.handler.getInput().getStack().getNbt();
+        if(cardNbt != null && cardNbt.contains("id")) {
+            ID cardId = new ID(cardNbt.getLong("id"));
+            if(!cardId.equals(this.balanceId)) {
+                this.balanceId = cardId;
+                this.balance = GetCardBalancePacket.C2S.send(cardId).read();
+            }
+        }
+        else {
+            this.balance = -1;
+            this.balanceId = null;
+        }
+        boolean depositShouldBeDisabled = amount == -1 || !amountFieldShouldBeEditable ||
+                Utils.countCash(handler.getPlayerInventory()) < amount || balance < 0;
+        if(this.buttons.get(0).isDisabled() != depositShouldBeDisabled)
+            this.buttons.get(0).setDisabled(depositShouldBeDisabled);
+        boolean withdrawShouldBeDisabled = amount == -1 || !amountFieldShouldBeEditable || balance < amount;
         if(this.buttons.get(1).isDisabled() != withdrawShouldBeDisabled)
             this.buttons.get(1).setDisabled(withdrawShouldBeDisabled);
     }
@@ -224,7 +240,10 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
 
         @Override
         public void onPress() {
-
+            ItemStack card = screen.handler.getInventory().getStack(AutomatedTellerMachineBlockEntity.INPUT_SLOT);
+            if(card.getNbt() == null || !card.getNbt().contains("id")) return;
+            DepositCashC2SPacket.send(new ID(card.getNbt().getLong("id")),
+                    Hash.digest(String.valueOf(screen.pinField.getText())), screen.parseAmountField());
         }
     }
 
@@ -243,7 +262,7 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
             ItemStack card = screen.handler.getInventory().getStack(AutomatedTellerMachineBlockEntity.INPUT_SLOT);
             if(card.getNbt() == null || !card.getNbt().contains("id")) return;
             WithdrawCashC2SPacket.send(new ID(card.getNbt().getLong("id")),
-                    Hash.digest(String.valueOf(screen.parsePinField())), screen.parseAmountField());
+                    Hash.digest(String.valueOf(screen.pinField.getText())), screen.parseAmountField());
         }
     }
 }

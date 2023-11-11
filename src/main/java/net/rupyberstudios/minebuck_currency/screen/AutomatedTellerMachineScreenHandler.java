@@ -48,8 +48,16 @@ public class AutomatedTellerMachineScreenHandler extends ScreenHandler {
         addPlayerHotbar(playerInventory);
     }
 
+    public Slot getInput() {
+        return input;
+    }
+
     public void withdrawCash(int amount) {
         Utils.addCash(playerInventory, amount);
+    }
+
+    public void depositCash(int amount) {
+        Utils.removeCash(playerInventory, amount);
     }
 
     @Override

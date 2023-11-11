@@ -5,6 +5,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Pair;
+import net.rupyberstudios.minebuck_currency.config.ModConfig;
 import net.rupyberstudios.minebuck_currency.item.ModItems;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -15,15 +16,8 @@ public class Utils {
     public static int countCash(@NotNull Inventory inventory) {
         int total = 0;
         for(int i = 0; i < inventory.size(); i++) {
-            Item item = inventory.getStack(i).getItem();
-            if(item == ModItems.COIN_1) total += 1;
-            else if(item == ModItems.COIN_2) total += 2;
-            else if(item == ModItems.BANKNOTE_5) total += 5;
-            else if(item == ModItems.BANKNOTE_10) total += 10;
-            else if(item == ModItems.BANKNOTE_20) total += 20;
-            else if(item == ModItems.BANKNOTE_50) total += 50;
-            else if(item == ModItems.BANKNOTE_100) total += 100;
-            else if(item == ModItems.BANKNOTE_200) total += 200;
+            ItemStack stack = inventory.getStack(i);
+            total += getValue(stack.getItem()) * stack.getCount();
         }
         return total;
     }
@@ -41,8 +35,9 @@ public class Utils {
         cash.put(200, new HashMap<>());
         for(int i = 0; i < inventory.size(); i++) {
             ItemStack stack = inventory.getStack(i);
-            int value = getValue(stack);
-            cash.get(value).put(i, stack.getCount() * value);
+            int value = getValue(stack.getItem());
+            if(value != 0)
+                cash.get(value).put(i, stack.getCount() * value);
         }
         HashMap<Integer, Pair<Integer, Integer>> remaining = new HashMap<>();
         remaining.put(2, calculateRemaining(cash, 2, amount));
@@ -54,7 +49,7 @@ public class Utils {
         remaining.put(200, calculateRemaining(cash, 200, amount));
         Pair<Integer, Pair<Integer, Integer>> best = new Pair<>(1, calculateRemaining(cash, 1, amount));
         for(int value : remaining.keySet()) {
-            if(Math.abs(remaining.get(value).getRight()) < best.getRight().getRight())
+            if(isBetter(remaining.get(value), best))
                 best = new Pair<>(value, remaining.get(value));
         }
         for(Integer slot : cash.get(best.getLeft()).keySet()) {
@@ -66,12 +61,12 @@ public class Utils {
                 inventory.setStack(slot, ItemStack.EMPTY);
             }
         }
-        long change = best.getRight().getRight();
+        int change = best.getRight().getRight();
         if(change == 0) return;
-        if(best.getRight().getRight() > 0)
-            removeCash(inventory, best.getRight().getRight());
+        if(change > 0)
+            removeCash(inventory, change);
         else
-            addCash(inventory, -best.getRight().getRight());
+            addCash(inventory, -change);
     }
 
     public static void addCash(PlayerInventory inventory, int amount) {
@@ -98,7 +93,7 @@ public class Utils {
         amount %= 10;
         needed = amount / 5;
         if(needed > 0)
-            inventory.offerOrDrop(new ItemStack(ModItems.BANKNOTE_50, needed));
+            inventory.offerOrDrop(new ItemStack(ModItems.BANKNOTE_5, needed));
         amount %= 5;
         needed = amount / 2;
         if(needed > 0)
@@ -114,17 +109,25 @@ public class Utils {
         int total = 0;
         for(int subtotal : stacks.values())
             total += subtotal;
-        int needed = amount / value;
-        if((total - needed * value) > 0) return new Pair<>(needed, amount - needed * value);
+        if(total == 0) return new Pair<>(0, Integer.MAX_VALUE);
+        int needed = (int)Math.ceil((double)amount / value);
+        if((total - needed * value) > 0)
+            return new Pair<>(needed, amount - needed * value);
         else {
             int available = total / value;
             return new Pair<>(available, amount - total);
         }
     }
 
+    private static boolean isBetter(Pair<Integer, Integer> current, Pair<Integer, Pair<Integer, Integer>> best) {
+        if(ModConfig.INSTANCE.preferHigherValueCash)
+            return Math.abs(current.getRight()) <= Math.abs(best.getRight().getRight());
+        else
+            return Math.abs(current.getRight()) < Math.abs(best.getRight().getRight());
+    }
+
     @Contract(pure = true)
-    private static int getValue(@NotNull ItemStack stack) {
-        Item item = stack.getItem();
+    private static int getValue(@NotNull Item item) {
         int value = 0;
         if(item == ModItems.COIN_1) value = 1;
         else if(item == ModItems.COIN_2) value = 2;

@@ -1,7 +1,5 @@
 package net.rupyberstudios.minebuck_currency.networking.packet;
 
-import net.rupyberstudios.minebuck_currency.MinebuckCurrency;
-
 import java.util.HashMap;
 
 public class PacketSequence<T> {
@@ -25,8 +23,7 @@ public class PacketSequence<T> {
             int temp = index;
             index++;
             return temp;
-        } catch(Exception e) {MinebuckCurrency.LOGGER.error(e.toString());}
-        return -1;
+        } catch(Exception e) {throw new RuntimeException(e);}
     }
 
     public void write(int index, T data) {

@@ -1,7 +1,5 @@
 package net.rupyberstudios.minebuck_currency.networking.packet;
 
-import net.rupyberstudios.minebuck_currency.MinebuckCurrency;
-
 import java.util.concurrent.Semaphore;
 
 public class Packet<T> {
@@ -17,7 +15,7 @@ public class Packet<T> {
     public void prepare() {
         try {
             write.acquire();
-        } catch(Exception e) {MinebuckCurrency.LOGGER.error(e.toString());}
+        } catch(Exception e) {throw new RuntimeException(e);}
     }
 
     public void write(T data) {
@@ -26,12 +24,12 @@ public class Packet<T> {
     }
 
     public T read() {
-        T temp = null;
+        T temp;
         try {
             read.acquire();
             temp = data;
             write.release();
-        } catch(Exception e) {MinebuckCurrency.LOGGER.error(e.toString());}
+        } catch(Exception e) {throw new RuntimeException(e);}
         return temp;
     }
 }

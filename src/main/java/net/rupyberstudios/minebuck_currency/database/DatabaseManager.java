@@ -16,18 +16,27 @@ public class DatabaseManager {
         Statement statement = MinebuckCurrency.connection.createStatement();
         statement.execute("""
                 CREATE TABLE IF NOT EXISTS cards (
-                id INTEGER,
-                pinHash CHAR(64) NOT NULL,
-                balance LONG NOT NULL DEFAULT 0,
-                ownerId CHAR(36) NULL,
-                PRIMARY KEY (id),
-                FOREIGN KEY (ownerId) REFERENCES players(id)
+                    id LONG,
+                    pinHash CHAR(64) NOT NULL,
+                    balance LONG NOT NULL DEFAULT 0,
+                    ownerId CHAR(36) NULL,
+                    PRIMARY KEY (id),
+                    FOREIGN KEY (ownerId) REFERENCES players(id)
                 );""");
         statement.execute("""
                 CREATE TABLE IF NOT EXISTS players (
-                id CHAR(36),
-                username VARCHAR(16) NOT NULL,
-                PRIMARY KEY (id)
+                    id CHAR(36),
+                    username VARCHAR(16) NOT NULL,
+                    PRIMARY KEY (id)
+                );""");
+        statement.execute("""
+                CREATE TABLE IF NOT EXISTS receipts (
+                    id LONG,
+                    emitter CHAR(36),
+                    recipientId CHAR(36),
+                    FOREIGN KEY (emitterId) REFERENCES players(id),
+                    FOREIGN KEY (recipientId) REFERENCES players(id),
+                    PRIMARY KEY (id)
                 );""");
     }
 
@@ -84,6 +93,15 @@ public class DatabaseManager {
             total = total.add(BigInteger.valueOf(balance));
         }
         return total;
+    }
+
+    public static void depositCash(@NotNull ID cardId, int amount) throws SQLException {
+        PreparedStatement preparedStatement = MinebuckCurrency.connection.prepareStatement("""
+                UPDATE cards SET balance=balance+? WHERE id=?;""");
+        preparedStatement.setInt(1, amount);
+        preparedStatement.setLong(2, cardId.toLong());
+        preparedStatement.execute();
+
     }
 
     public static void insertOrUpdatePlayer(@NotNull UUID player, @NotNull String username) throws SQLException {
