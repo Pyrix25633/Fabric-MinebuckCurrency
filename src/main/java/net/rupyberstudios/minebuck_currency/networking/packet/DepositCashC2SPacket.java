@@ -34,9 +34,11 @@ public class DepositCashC2SPacket {
             int amount = buf.readInt();
             if(player.currentScreenHandler instanceof AutomatedTellerMachineScreenHandler screenHandler) {
                 UUID cardOwner = DatabaseManager.getCardOwner(cardId);
-                if(cardOwner != null && cardOwner != player.getUuid()) return;
+                if(cardOwner != null && !cardOwner.equals(player.getUuid())) return;
+                if(!DatabaseManager.isPinCorrect(cardId, pinHash)) return;
                 screenHandler.depositCash(amount);
-
+                ID receiptId = DatabaseManager.depositCash(cardId, amount, player.getUuid());
+                screenHandler.printReceipt(receiptId);
             }
         } catch(Exception e) {MinebuckCurrency.LOGGER.error(e.toString());}
     }

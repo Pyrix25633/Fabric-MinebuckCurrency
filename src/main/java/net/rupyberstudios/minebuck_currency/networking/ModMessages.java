@@ -15,6 +15,7 @@ public class ModMessages {
             new Identifier(MinebuckCurrency.MOD_ID, "get_personal_cars_total_balance");
     public static final Identifier WITHDRAW_CASH = new Identifier(MinebuckCurrency.MOD_ID, "withdraw_cash");
     public static final Identifier DEPOSIT_CASH = new Identifier(MinebuckCurrency.MOD_ID, "deposit_cash");
+    public static final Identifier GET_RECEIPT_INFO = new Identifier(MinebuckCurrency.MOD_ID, "get_receipt_info");
 
     public static void registerS2CPackets() {
         ClientPlayNetworking.registerGlobalReceiver(ITEM_STACK_SYNC_ID, ItemStackSyncS2CPacket::receive);
@@ -22,6 +23,7 @@ public class ModMessages {
         ClientPlayNetworking.registerGlobalReceiver(GET_CARD_BALANCE, GetCardBalancePacket.S2C::receive);
         ClientPlayNetworking.registerGlobalReceiver(GET_PERSONAL_CARDS_TOTAL_BALANCE,
                 GetPersonalCardsTotalBalancePacket.S2C::receive);
+        ClientPlayNetworking.registerGlobalReceiver(GET_RECEIPT_INFO, GetReceiptInfoPacket.S2C::receive);
     }
 
     public static void registerC2SPackets() {
@@ -32,5 +34,6 @@ public class ModMessages {
                 GetPersonalCardsTotalBalancePacket.C2S::receive);
         ServerPlayNetworking.registerGlobalReceiver(WITHDRAW_CASH, WithdrawCashC2SPacket::receive);
         ServerPlayNetworking.registerGlobalReceiver(DEPOSIT_CASH, DepositCashC2SPacket::receive);
+        ServerPlayNetworking.registerGlobalReceiver(GET_RECEIPT_INFO, GetReceiptInfoPacket.C2S::receive);
     }
 }

@@ -16,8 +16,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class CardItem extends Item implements DyeableItem {
-    private static final MutableText ID = Text.translatable("item.minebuck_currency.card.tooltip.id");
-    private static final MutableText OWNER = Text.translatable("item.minebuck_currency.card.tooltip.owner");
+    private static final MutableText ID_TEXT = Text.translatable("item.minebuck_currency.card.tooltip.id");
+    private static final MutableText OWNER_TEXT = Text.translatable("item.minebuck_currency.card.tooltip.owner");
     private static final Text UNKNOWN_OWNER = Text.translatable("item.minebuck_currency.card.tooltip.owner.unknown");
 
     public CardItem(Settings settings) {
@@ -44,14 +44,14 @@ public class CardItem extends Item implements DyeableItem {
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         super.appendTooltip(stack, world, tooltip, context);
         ID id = getId(stack);
-        tooltip.add(ID.copy().append(getIdString(id)));
+        tooltip.add(ID_TEXT.copy().append(getIdString(id)));
         if(id != null) {
             String owner = GetCardOwnerPacket.C2S.send(id).read();
             if(owner == null) return;
             if(owner.isEmpty())
                 tooltip.add(UNKNOWN_OWNER);
             else
-                tooltip.add(OWNER.copy().append(owner));
+                tooltip.add(OWNER_TEXT.copy().append(owner));
         }
     }
 }

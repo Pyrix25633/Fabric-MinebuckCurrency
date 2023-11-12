@@ -41,5 +41,18 @@
   "item.minebuck_currency.card.tooltip.owner": "Owner: ",
   "item.minebuck_currency.card.tooltip.owner.unknown": "Owner: §7Unknown",
 
-  "item.minebuck_currency.receipt": "Receipt"
+  "item.minebuck_currency.receipt": "Receipt",
+  "item.minebuck_currency.receipt.tooltip.id": "ID: ",
+  "item.minebuck_currency.receipt.tooltip.emitter_player": "Emitter: ",
+  "item.minebuck_currency.receipt.tooltip.emitter_player.unknown": "Emitter: §7Unknown",
+  "item.minebuck_currency.receipt.tooltip.source_player": "Source: ",
+  "item.minebuck_currency.receipt.tooltip.source_player.unknown": "Source: §7Unknown",
+  "item.minebuck_currency.receipt.tooltip.destination_player": "Destination: ",
+  "item.minebuck_currency.receipt.tooltip.destination_player.unknown": "Destination: §7Unknown",
+  "item.minebuck_currency.receipt.tooltip.source_card_id": "Source Card: ",
+  "item.minebuck_currency.receipt.tooltip.destination_card_id": "Destination Card: ",
+  "item.minebuck_currency.receipt.tooltip.amount": "Amount: ",
+  "item.minebuck_currency.receipt.tooltip.item": "Item: ",
+  "item.minebuck_currency.receipt.tooltip.service": "Service: ",
+  "item.minebuck_currency.receipt.tooltip.description": "Description: "
 }

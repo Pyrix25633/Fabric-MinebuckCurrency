@@ -25,7 +25,7 @@ public class ComputerCardBalanceScreen extends HandledScreen<ComputerCardBalance
     private int textColor;
     private static final Text BALANCE_TEXT = Text.translatable("container.minebuck_currency.computer.card_balance.balance");
     private static final Text SYMBOL_TEXT = Text.translatable("symbol.minebuck_currency.minebuck");
-    private static final Text PERSONAL_CARDS_TOTAL_BALANCE =
+    private static final Text PERSONAL_CARDS_TOTAL_BALANCE_TEXT =
             Text.translatable("container.minebuck_currency.computer.card_balance.personal_cards_total_balance");
     private static final Text DEFAULT_TEXT = Text.literal("?").append(SYMBOL_TEXT);
     private final Position position;
@@ -66,8 +66,8 @@ public class ComputerCardBalanceScreen extends HandledScreen<ComputerCardBalance
         context.drawText(this.textRenderer, BALANCE_TEXT, 30, 25, textColor, false);
         context.drawText(this.textRenderer, balance,
                 this.backgroundWidth - this.textRenderer.getWidth(balance) - 6, 25, textColor, false);
-        context.drawText(this.textRenderer, PERSONAL_CARDS_TOTAL_BALANCE,
-                (this.backgroundWidth - this.textRenderer.getWidth(PERSONAL_CARDS_TOTAL_BALANCE)) / 2,
+        context.drawText(this.textRenderer, PERSONAL_CARDS_TOTAL_BALANCE_TEXT,
+                (this.backgroundWidth - this.textRenderer.getWidth(PERSONAL_CARDS_TOTAL_BALANCE_TEXT)) / 2,
                 44, textColor, false);
         context.drawText(this.textRenderer, personalCardsTotalBalance,
                 (this.backgroundWidth - this.textRenderer.getWidth(personalCardsTotalBalance)) / 2,

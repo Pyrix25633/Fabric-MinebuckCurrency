@@ -8,6 +8,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.rupyberstudios.minebuck_currency.MinebuckCurrency;
 import net.rupyberstudios.minebuck_currency.item.custom.CardItem;
+import net.rupyberstudios.minebuck_currency.item.custom.ReceiptItem;
 
 public class ModItems {
     public static final Item COIN_1 = registerItem("coin_1", new Item(new FabricItemSettings()));
@@ -21,7 +22,7 @@ public class ModItems {
 
     public static final Item CARD = registerItem("card", new CardItem(new FabricItemSettings().maxCount(1)));
 
-    public static final Item RECEIPT = registerItem("receipt", new Item(new FabricItemSettings().maxCount(1)));
+    public static final Item RECEIPT = registerItem("receipt", new ReceiptItem(new FabricItemSettings().maxCount(1)));
 
     private static Item registerItem(String name, Item item) {
         Item registered = Registry.register(Registries.ITEM, new Identifier(MinebuckCurrency.MOD_ID, name), item);

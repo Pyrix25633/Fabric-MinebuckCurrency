@@ -42,7 +42,7 @@ public class AutomatedTellerMachineScreenHandler extends ScreenHandler {
                 return nbt != null && nbt.contains("id");
             }
         });
-        this.output = this.addSlot(new OutputSlot(inventory, AutomatedTellerMachineBlockEntity.OUTPUT_SLOT, 62, 21));
+        this.output = this.addSlot(new OutputSlot(inventory, AutomatedTellerMachineBlockEntity.OUTPUT_SLOT, 8, 45));
 
         addPlayerInventory(playerInventory);
         addPlayerHotbar(playerInventory);
@@ -58,6 +58,14 @@ public class AutomatedTellerMachineScreenHandler extends ScreenHandler {
 
     public void depositCash(int amount) {
         Utils.removeCash(playerInventory, amount);
+    }
+
+    public void printReceipt(@NotNull ID receiptId) {
+        NbtCompound nbt = new NbtCompound();
+        nbt.putLong("id", receiptId.toLong());
+        ItemStack stack = new ItemStack(ModItems.RECEIPT);
+        stack.setNbt(nbt);
+        output.setStack(stack);
     }
 
     @Override

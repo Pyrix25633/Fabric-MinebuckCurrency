@@ -10,4 +10,27 @@ Table players {
   username VARCHAR(16) [not null]
 }
 
-Ref: players.id < cards.ownerId
+Table receipts {
+  id LONG [pk]
+  emitterPlayerId CHAR(36)
+  sourcePlayerId CHAR(36)
+  destinationPlayerId CHAR(36)
+  sourceCardId LONG [default: NULL]
+  destinationCardId LONG [default: NULL]
+  amount INT [not null]
+  item VARCHAR(64) [default: NULL]
+  service VARCHAR(32) [default: NULL]
+  description VARCHAR(128) [default: NULL]
+}
+
+Ref:players.id < cards.ownerId
+
+Ref:players.id < receipts.emitterPlayerId
+
+Ref:players.id < receipts.sourcePlayerId
+
+Ref:players.id < receipts.destinationPlayerId
+
+Ref:cards.id < receipts.sourceCardId
+
+Ref:cards.id < receipts.destinationCardId
