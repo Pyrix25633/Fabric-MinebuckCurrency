@@ -33,8 +33,7 @@ public class WithdrawCashC2SPacket {
             String pinHash = buf.readString();
             int amount = buf.readInt();
             if(player.currentScreenHandler instanceof AutomatedTellerMachineScreenHandler screenHandler) {
-                UUID cardOwner = DatabaseManager.getCardOwner(cardId);
-                if(cardOwner != null && !cardOwner.equals(player.getUuid())) return;
+                if(DatabaseManager.getCardBalance(cardId, player.getUuid()) < amount) return;
                 if(!DatabaseManager.isPinCorrect(cardId, pinHash)) return;
                 ID receiptId = DatabaseManager.withdrawCash(cardId, amount, player.getUuid());
                 screenHandler.withdrawCash(amount);
