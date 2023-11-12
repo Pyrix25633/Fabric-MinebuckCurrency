@@ -96,7 +96,7 @@ public class DatabaseManager {
         if(!results.next()) return -1;
         long balance = results.getLong("balance");
         String ownerId = results.getString("ownerId");
-        UUID owner = ownerId.isEmpty() ? null : UUID.fromString(ownerId);
+        UUID owner = ownerId == null ? null : UUID.fromString(ownerId);
         return owner == null | player.equals(owner) ? balance : -1;
     }
 
@@ -148,6 +148,35 @@ public class DatabaseManager {
         preparedStatement.setLong(5, cardId.toLong());
         preparedStatement.setInt(6, amount);
         preparedStatement.setString(7, "Cash Deposit");
+        preparedStatement.execute();
+        return receiptId;
+    }
+
+    public static @NotNull ID withdrawCash(@NotNull ID cardId, int amount, @NotNull UUID player) throws SQLException {
+        PreparedStatement preparedStatement = MinebuckCurrency.connection.prepareStatement("""
+                UPDATE cards SET balance=balance-? WHERE id=?;""");
+        preparedStatement.setInt(1, amount);
+        preparedStatement.setLong(2, cardId.toLong());
+        preparedStatement.execute();
+        Statement statement = MinebuckCurrency.connection.createStatement();
+        ID receiptId;
+        boolean alreadyExists;
+        do {
+            receiptId = ID.random();
+            ResultSet results = statement.executeQuery("SELECT id FROM receipts WHERE id=" + cardId.toLong() + ";");
+            alreadyExists = results.next();
+        } while(alreadyExists);
+        preparedStatement = MinebuckCurrency.connection.prepareStatement("""
+                INSERT INTO receipts
+                (id, emitterPlayerId, sourcePlayerId, destinationPlayerId, sourceCardId, amount, service)
+                VALUES (?, ?, ?, ?, ?, ?, ?);""");
+        preparedStatement.setLong(1, receiptId.toLong());
+        preparedStatement.setString(2, BANK_UUID);
+        preparedStatement.setString(3, player.toString());
+        preparedStatement.setString(4, player.toString());
+        preparedStatement.setLong(5, cardId.toLong());
+        preparedStatement.setInt(6, amount);
+        preparedStatement.setString(7, "Cash Withdraw");
         preparedStatement.execute();
         return receiptId;
     }

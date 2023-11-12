@@ -240,10 +240,13 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
 
         @Override
         public void onPress() {
+            if(this.disabled) return;
             ItemStack card = screen.handler.getInventory().getStack(AutomatedTellerMachineBlockEntity.INPUT_SLOT);
             if(card.getNbt() == null || !card.getNbt().contains("id")) return;
             DepositCashC2SPacket.send(new ID(card.getNbt().getLong("id")),
                     Hash.digest(String.valueOf(screen.pinField.getText())), screen.parseAmountField());
+            screen.balanceId = null;
+            screen.balance = -1;
         }
     }
 
@@ -259,10 +262,13 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
 
         @Override
         public void onPress() {
+            if(this.disabled) return;
             ItemStack card = screen.handler.getInventory().getStack(AutomatedTellerMachineBlockEntity.INPUT_SLOT);
             if(card.getNbt() == null || !card.getNbt().contains("id")) return;
             WithdrawCashC2SPacket.send(new ID(card.getNbt().getLong("id")),
                     Hash.digest(String.valueOf(screen.pinField.getText())), screen.parseAmountField());
+            screen.balanceId = null;
+            screen.balance = -1;
         }
     }
 }

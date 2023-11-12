@@ -8,10 +8,13 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.rupyberstudios.minebuck_currency.MinebuckCurrency;
+import net.rupyberstudios.minebuck_currency.database.DatabaseManager;
 import net.rupyberstudios.minebuck_currency.database.ID;
 import net.rupyberstudios.minebuck_currency.networking.ModMessages;
 import net.rupyberstudios.minebuck_currency.screen.AutomatedTellerMachineScreenHandler;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.UUID;
 
 public class WithdrawCashC2SPacket {
     public static void send(@NotNull ID cardId, String pinHash, int amount) {
@@ -30,8 +33,12 @@ public class WithdrawCashC2SPacket {
             String pinHash = buf.readString();
             int amount = buf.readInt();
             if(player.currentScreenHandler instanceof AutomatedTellerMachineScreenHandler screenHandler) {
+                UUID cardOwner = DatabaseManager.getCardOwner(cardId);
+                if(cardOwner != null && !cardOwner.equals(player.getUuid())) return;
+                if(!DatabaseManager.isPinCorrect(cardId, pinHash)) return;
+                ID receiptId = DatabaseManager.withdrawCash(cardId, amount, player.getUuid());
                 screenHandler.withdrawCash(amount);
-                //TODO: Remove from balance and create receipt
+                screenHandler.printReceipt(receiptId);
             }
         } catch(Exception e) {MinebuckCurrency.LOGGER.error(e.toString());}
     }
