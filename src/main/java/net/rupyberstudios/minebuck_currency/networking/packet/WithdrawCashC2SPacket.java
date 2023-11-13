@@ -14,8 +14,6 @@ import net.rupyberstudios.minebuck_currency.networking.ModMessages;
 import net.rupyberstudios.minebuck_currency.screen.AutomatedTellerMachineScreenHandler;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.UUID;
-
 public class WithdrawCashC2SPacket {
     public static void send(@NotNull ID cardId, String pinHash, int amount) {
         PacketByteBuf data = PacketByteBufs.create();

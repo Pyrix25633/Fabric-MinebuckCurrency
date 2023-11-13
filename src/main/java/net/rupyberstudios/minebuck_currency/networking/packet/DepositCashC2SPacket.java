@@ -10,6 +10,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.rupyberstudios.minebuck_currency.MinebuckCurrency;
 import net.rupyberstudios.minebuck_currency.database.DatabaseManager;
 import net.rupyberstudios.minebuck_currency.database.ID;
+import net.rupyberstudios.minebuck_currency.database.Utils;
 import net.rupyberstudios.minebuck_currency.networking.ModMessages;
 import net.rupyberstudios.minebuck_currency.screen.AutomatedTellerMachineScreenHandler;
 import org.jetbrains.annotations.NotNull;
@@ -33,6 +34,7 @@ public class DepositCashC2SPacket {
             String pinHash = buf.readString();
             int amount = buf.readInt();
             if(player.currentScreenHandler instanceof AutomatedTellerMachineScreenHandler screenHandler) {
+                if(Utils.countCash(player.getInventory()) < amount) return;
                 UUID cardOwner = DatabaseManager.getCardOwner(cardId);
                 if(cardOwner != null && !cardOwner.equals(player.getUuid())) return;
                 if(!DatabaseManager.isPinCorrect(cardId, pinHash)) return;

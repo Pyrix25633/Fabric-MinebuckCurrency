@@ -13,6 +13,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.rupyberstudios.minebuck_currency.block.entity.AutomatedTellerMachineBlockEntity;
 import net.rupyberstudios.minebuck_currency.block.entity.ComputerBlockEntity;
 import net.rupyberstudios.minebuck_currency.networking.ModMessages;
 import org.jetbrains.annotations.NotNull;
@@ -37,5 +38,7 @@ public class ItemStackSyncS2CPacket {
         assert client.world != null;
         if(client.world.getBlockEntity(position) instanceof ComputerBlockEntity computerBlockEntity)
             computerBlockEntity.setInventory(list);
+        else if(client.world.getBlockEntity(position) instanceof AutomatedTellerMachineBlockEntity automatedTellerMachineBlockEntity)
+            automatedTellerMachineBlockEntity.setInventory(list);
     }
 }
