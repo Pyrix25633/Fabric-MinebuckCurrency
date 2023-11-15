@@ -53,6 +53,7 @@
   "item.minebuck_currency.receipt.tooltip.destination_card_id": "Destination Card: ",
   "item.minebuck_currency.receipt.tooltip.amount": "Amount: ",
   "item.minebuck_currency.receipt.tooltip.item": "Item: ",
+  "item.minebuck_currency.receipt.tooltip.quantity": "Quantity: ",
   "item.minebuck_currency.receipt.tooltip.service": "Service: ",
   "item.minebuck_currency.receipt.tooltip.description": "Description: "
 }

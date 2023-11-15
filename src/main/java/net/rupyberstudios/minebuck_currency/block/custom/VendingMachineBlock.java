@@ -5,6 +5,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.*;
@@ -17,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class VendingMachineBlock extends BlockWithEntity implements BlockEntityProvider {
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
-    /*public static final BooleanProperty ON = BooleanProperty.of("on");*/
+    public static final BooleanProperty ON = BooleanProperty.of("on");
 
     public VendingMachineBlock(Settings settings) {
         super(settings);
@@ -41,7 +42,7 @@ public class VendingMachineBlock extends BlockWithEntity implements BlockEntityP
 
     @Override
     public BlockState getPlacementState(@NotNull ItemPlacementContext ctx) {
-        return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing())/*.with(ON, false)*/;
+        return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing()).with(ON, false);
     }
 
     @Override
@@ -59,7 +60,7 @@ public class VendingMachineBlock extends BlockWithEntity implements BlockEntityP
 
     @Override
     protected void appendProperties(StateManager.@NotNull Builder<Block, BlockState> builder) {
-        builder.add(FACING/*, ON*/);
+        builder.add(FACING, ON);
     }
 
     @Override

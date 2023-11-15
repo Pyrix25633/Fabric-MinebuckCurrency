@@ -6,10 +6,13 @@ public class ReceiptInfo {
     private final String emitterPlayer, sourcePlayer, destinationPlayer;
     private final ID sourceCardId, destinationCardId;
     private final int amount;
-    private final String item, service, description;
+    private final String item;
+    private final Integer quantity;
+    private final String service, description;
 
     public ReceiptInfo(@NotNull String emitterPlayer, @NotNull String sourcePlayer, @NotNull String destinationPlayer,
-                       ID sourceCardId, ID destinationCardId, int amount, String item, String service, String description) {
+                       ID sourceCardId, ID destinationCardId, int amount, String item, Integer quantity,
+                       String service, String description) {
         this.emitterPlayer = emitterPlayer;
         this.sourcePlayer = sourcePlayer;
         this.destinationPlayer = destinationPlayer;
@@ -17,13 +20,14 @@ public class ReceiptInfo {
         this.destinationCardId = destinationCardId;
         this.amount = amount;
         this.item = item;
+        this.quantity = quantity;
         this.service = service;
         this.description = description;
     }
 
     public ReceiptInfo() {
         this("", "", "", null, null, -1,
-                null, null, null);
+                null, null, null, null);
     }
 
     public ReceiptInfo get() {
@@ -57,6 +61,10 @@ public class ReceiptInfo {
 
     public String getItem() {
         return item;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
     }
 
     public String getService() {

@@ -42,6 +42,7 @@ public class DatabaseManager {
                     destinationCardId LONG NULL DEFAULT NULL,
                     amount INT NOT NULL,
                     item VARCHAR(64) NULL DEFAULT NULL,
+                    quantity INT NULL DEFAULT NULL,
                     service VARCHAR(32) NULL DEFAULT NULL,
                     description VARCHAR(128) NULL DEFAULT NULL,
                     FOREIGN KEY (emitterPlayerId) REFERENCES players(id),
@@ -49,6 +50,17 @@ public class DatabaseManager {
                     FOREIGN KEY (destinationPlayerId) REFERENCES players(id),
                     FOREIGN KEY (sourceCardId) REFERENCES cards(id),
                     FOREIGN KEY (destinationCardId) REFERENCES cards(id),
+                    PRIMARY KEY (id)
+                );""");
+        statement.execute("""
+                CREATE TABLE IF NOT EXISTS vendingMachines (
+                    id LONG,
+                    cardId LONG NOT NULL,
+                    piecePrice INT NOT NULL,
+                    itemIdentifier VARCHAR(128) NOT NULL,
+                    itemNbt VARCHAR(2048) NULL DEFAULT NULL,
+                    quantity INT NOT NULL,
+                    FOREIGN KEY (cardId) REFERENCES cards(id),
                     PRIMARY KEY (id)
                 );""");
         PreparedStatement preparedStatement = MinebuckCurrency.connection.prepareStatement("""
@@ -181,6 +193,8 @@ public class DatabaseManager {
         return receiptId;
     }
 
+
+
     @Contract("_ -> new")
     public static @NotNull ReceiptInfo getReceiptInfo(@NotNull ID receiptId) throws SQLException {
         Statement statement = MinebuckCurrency.connection.createStatement();
@@ -203,7 +217,7 @@ public class DatabaseManager {
         else destinationPlayer = playerResults.getString("username");
         return new ReceiptInfo(emitterPlayer, sourcePlayer, destinationPlayer,
                 new ID(results.getLong("sourceCardId")), new ID(results.getLong("destinationCardId")),
-                results.getInt("amount"), results.getString("item"),
+                results.getInt("amount"), results.getString("item"), results.getInt("quanitty"),
                 results.getString("service"), results.getString("description"));
     }
 

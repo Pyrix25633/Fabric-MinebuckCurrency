@@ -55,9 +55,11 @@ public class GetReceiptInfoPacket {
             data.writeLong(destinationCardId != null ? destinationCardId.toLong() : 0);
             data.writeInt(info.getAmount());
             String item = info.getItem();
+            Integer quantity = info.getQuantity();
             String service = info.getService();
             String description = info.getDescription();
             data.writeString(item != null ? item : "");
+            data.writeInt(quantity != null ? quantity : -1);
             data.writeString(service != null ? service : "");
             data.writeString(description != null ? description : "");
             data.writeInt(id);
@@ -76,12 +78,14 @@ public class GetReceiptInfoPacket {
             int amount = buf.readInt();
             String item = buf.readString();
             item = item.isEmpty() ? null : item;
+            Integer quantity = buf.readInt();
+            quantity = quantity != -1 ? quantity : null;
             String service = buf.readString();
             service = service.isEmpty() ? null : service;
             String description = buf.readString();
             description = description.isEmpty() ? null : description;
             ReceiptInfo received = new ReceiptInfo(emitterPlayer, sourcePlayer, destinationPlayer,
-                    sourceCardId, destinationCardId, amount, item, service, description);
+                    sourceCardId, destinationCardId, amount, item, quantity, service, description);
             int id = buf.readInt();
             info.write(id, received.get());
         }

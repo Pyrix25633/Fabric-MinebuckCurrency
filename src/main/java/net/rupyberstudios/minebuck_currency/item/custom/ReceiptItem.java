@@ -37,6 +37,7 @@ public class ReceiptItem extends Item implements DyeableItem {
     private static final Text AMOUNT_TEXT = Text.translatable("item.minebuck_currency.receipt.tooltip.amount");
     private static final Text SYMBOL_TEXT = Text.translatable("symbol.minebuck_currency.minebuck");
     private static final Text ITEM_TEXT = Text.translatable("item.minebuck_currency.receipt.tooltip.item");
+    private static final Text QUANTITY_TEXT = Text.translatable("item.minebuck_currency.receipt.tooltip.quantity");
     private static final Text SERVICE_TEXT = Text.translatable("item.minebuck_currency.receipt.tooltip.service");
     private static final Text DESCRIPTION_TEXT = Text.translatable("item.minebuck_currency.receipt.tooltip.description");
 
@@ -87,6 +88,8 @@ public class ReceiptItem extends Item implements DyeableItem {
             tooltip.add(AMOUNT_TEXT.copy().append(String.valueOf(info.getAmount())).append(SYMBOL_TEXT));
             if(info.getItem() != null)
                 tooltip.add(ITEM_TEXT.copy().append(info.getItem()));
+            if(info.getQuantity() != null)
+                tooltip.add(QUANTITY_TEXT.copy().append(String.valueOf(info.getQuantity())));
             if(info.getService() != null)
                 tooltip.add(SERVICE_TEXT.copy().append(info.getService()));
             if(info.getDescription() != null)
