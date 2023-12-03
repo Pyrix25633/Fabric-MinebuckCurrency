@@ -18,7 +18,7 @@ public class ActivateCardC2SPacket {
         PacketByteBuf data = PacketByteBufs.create();
         data.writeString(pinHash);
         data.writeBoolean(personal);
-        ClientPlayNetworking.send(ModMessages.ACTIVATE_CARD_ID, data);
+        ClientPlayNetworking.send(ModMessages.ACTIVATE_CARD, data);
     }
 
     public static void receive(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler,

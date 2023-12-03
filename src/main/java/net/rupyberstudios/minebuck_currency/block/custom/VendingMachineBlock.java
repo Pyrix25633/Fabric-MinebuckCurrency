@@ -13,12 +13,15 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.rupyberstudios.minebuck_currency.block.entity.ComputerBlockEntity;
+import net.rupyberstudios.minebuck_currency.block.property.VendingMachineOpenScreen;
+import net.rupyberstudios.minebuck_currency.block.property.VendingMachineOpenScreenProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class VendingMachineBlock extends BlockWithEntity implements BlockEntityProvider {
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     public static final BooleanProperty ON = BooleanProperty.of("on");
+    public static final VendingMachineOpenScreenProperty OPEN_SCREEN = VendingMachineOpenScreenProperty.of("open_screen");
 
     public VendingMachineBlock(Settings settings) {
         super(settings);
@@ -42,7 +45,8 @@ public class VendingMachineBlock extends BlockWithEntity implements BlockEntityP
 
     @Override
     public BlockState getPlacementState(@NotNull ItemPlacementContext ctx) {
-        return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing()).with(ON, false);
+        return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing()).with(ON, false)
+                .with(OPEN_SCREEN, VendingMachineOpenScreen.OFF);
     }
 
     @Override
@@ -60,7 +64,7 @@ public class VendingMachineBlock extends BlockWithEntity implements BlockEntityP
 
     @Override
     protected void appendProperties(StateManager.@NotNull Builder<Block, BlockState> builder) {
-        builder.add(FACING, ON);
+        builder.add(FACING, ON, OPEN_SCREEN);
     }
 
     @Override

@@ -17,15 +17,12 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.rupyberstudios.minebuck_currency.MinebuckCurrency;
 import net.rupyberstudios.minebuck_currency.block.entity.AutomatedTellerMachineBlockEntity;
-import net.rupyberstudios.minebuck_currency.block.entity.ComputerBlockEntity;
+import net.rupyberstudios.minebuck_currency.block.entity.VendingMachineBlockEntity;
 import net.rupyberstudios.minebuck_currency.config.ModConfig;
 import net.rupyberstudios.minebuck_currency.database.Hash;
 import net.rupyberstudios.minebuck_currency.database.ID;
-import net.rupyberstudios.minebuck_currency.database.Utils;
 import net.rupyberstudios.minebuck_currency.item.ModItems;
-import net.rupyberstudios.minebuck_currency.networking.packet.DepositCashC2SPacket;
-import net.rupyberstudios.minebuck_currency.networking.packet.GetCardBalancePacket;
-import net.rupyberstudios.minebuck_currency.networking.packet.WithdrawCashC2SPacket;
+import net.rupyberstudios.minebuck_currency.networking.packet.IsCardPinCorrectPacket;
 import net.rupyberstudios.minebuck_currency.screen.util.Position;
 import net.rupyberstudios.minebuck_currency.screen.widget.BaseButtonWidget;
 import net.rupyberstudios.minebuck_currency.screen.widget.SwitchableWidget;
@@ -35,26 +32,26 @@ import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
 
 @Environment(value = EnvType.CLIENT)
-public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerMachineScreenHandler> {
+public class VendingMachineConfigScreen extends HandledScreen<AutomatedTellerMachineScreenHandler> {
     private Identifier texture;
     private int textColor;
-    private static final Text PIN_TEXT = Text.translatable("container.minebuck_currency.automated_teller_machine.pin");
-    private static final Text AMOUNT_TEXT = Text.translatable("container.minebuck_currency.automated_teller_machine.amount");
-    private static final Text DEPOSIT_TEXT = Text.translatable("container.minebuck_currency.automated_teller_machine.deposit");
-    private static final Text WITHDRAW_TEXT = Text.translatable("container.minebuck_currency.automated_teller_machine.withdraw");
-    private TextFieldWidget pinField, amountField;
-    private boolean pinFieldEditable, amountFieldEditable;
+    private static final Text PIN_TEXT = Text.translatable("container.minebuck_currency.vending_machine.config.pin");
+    private static final Text PIECE_PRICE_TEXT = Text.translatable("container.minebuck_currency.vending_machine.config.piece_price");
+    private static final Text QUANTITY_TEXT = Text.translatable("container.minebuck_currency.vending_machine.config.quantity");
+    private static final Text CONFIGURE_TEXT = Text.translatable("container.minebuck_currency.vending_machine.config.configure");
+    private TextFieldWidget pinField, piecePriceField, quantityField;
+    private boolean pinFieldEditable, piecePriceFieldEditable, quantityFieldEditable;
     private final ArrayList<SwitchableWidget> buttons = new ArrayList<>();
     private final Position position;
-    private long balance;
-    private ID balanceId;
+    private boolean cardPinCorrect = false;
+    private ID cardPinCorrectId;
 
-    public AutomatedTellerMachineScreen(AutomatedTellerMachineScreenHandler handler, PlayerInventory inventory, Text title) {
+    public VendingMachineConfigScreen(AutomatedTellerMachineScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
         this.position = new Position(0, 0);
         this.backgroundHeight = 189;
         this.playerInventoryTitleY = this.backgroundHeight - 94;
-        this.balanceId = null;
+        this.cardPinCorrectId = null;
     }
 
     private <T extends ClickableWidget> void addButton(T button) {
@@ -67,8 +64,8 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
     protected void init() {
         super.init();
         texture = ModConfig.INSTANCE.classicGui ?
-                new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/automated_teller_machine_classic.png") :
-                new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/automated_teller_machine.png");
+                new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/vending_machine_config_classic.png") :
+                new Identifier(MinebuckCurrency.MOD_ID, "textures/gui/container/vending_machine_config.png");
         textColor = ModConfig.INSTANCE.classicGui ? 0x404040 : 0xd6d6df;
         titleX = (backgroundWidth - textRenderer.getWidth(title)) / 2;
         this.position.setXY((width - backgroundWidth) / 2, (height - backgroundHeight) / 2);
@@ -78,24 +75,31 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
         this.pinField.setMaxLength(9);
         this.setPinFieldEditable(false);
         this.addSelectableChild(this.pinField);
-        amountField = new TextFieldWidget(this.textRenderer, position.getX() + 112, position.getY() + 49,
-                56, 12, AMOUNT_TEXT);
-        this.amountField.setDrawsBackground(false);
-        this.amountField.setMaxLength(9);
-        this.setAmountFieldEditable(false);
-        this.addSelectableChild(this.amountField);
+        piecePriceField = new TextFieldWidget(this.textRenderer, position.getX() + 112, position.getY() + 49,
+                56, 12, PIECE_PRICE_TEXT);
+        this.piecePriceField.setDrawsBackground(false);
+        this.piecePriceField.setMaxLength(9);
+        this.setPiecePriceFieldEditable(false);
+        this.addSelectableChild(this.piecePriceField);
+        quantityField = new TextFieldWidget(this.textRenderer, position.getX() + 112, position.getY() + 72,
+                56, 12, QUANTITY_TEXT);
+        this.quantityField.setDrawsBackground(false);
+        this.quantityField.setMaxLength(9);
+        this.setQuantityFieldEditable(false);
+        this.addSelectableChild(this.quantityField);
         this.buttons.clear();
-        this.addButton(new DepositButtonWidget(this));
-        this.addButton(new WithdrawButtonWidget(this));
+        this.addButton(new ConfigureButtonWidget(this));
     }
 
     @Override
     public void resize(MinecraftClient client, int width, int height) {
         String pin = this.pinField.getText();
-        String amount = this.amountField.getText();
+        String piecePrice = this.piecePriceField.getText();
+        String quantity = this.quantityField.getText();
         this.init(client, width, height);
         this.pinField.setText(pin);
-        this.amountField.setText(amount);
+        this.piecePriceField.setText(piecePrice);
+        this.quantityField.setText(quantity);
     }
 
     @Override
@@ -108,7 +112,10 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
         if(this.pinField.keyPressed(keyCode, scanCode, modifiers) || this.pinField.isActive()) {
             return true;
         }
-        if(this.amountField.keyPressed(keyCode, scanCode, modifiers) || this.amountField.isActive()) {
+        if(this.piecePriceField.keyPressed(keyCode, scanCode, modifiers) || this.piecePriceField.isActive()) {
+            return true;
+        }
+        if(this.quantityField.keyPressed(keyCode, scanCode, modifiers) || this.quantityField.isActive()) {
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
@@ -117,7 +124,8 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         pinField.mouseClicked(mouseX, mouseY, button);
-        amountField.mouseClicked(mouseX, mouseY, button);
+        piecePriceField.mouseClicked(mouseX, mouseY, button);
+        quantityField.mouseClicked(mouseX, mouseY, button);
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
@@ -128,9 +136,12 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
         context.drawText(this.textRenderer, PIN_TEXT,
                 112 - this.textRenderer.getWidth(PIN_TEXT) - 2,
                 25, textColor, false);
-        context.drawText(this.textRenderer, AMOUNT_TEXT,
-                112 - this.textRenderer.getWidth(AMOUNT_TEXT) - 2,
+        context.drawText(this.textRenderer, PIECE_PRICE_TEXT,
+                112 - this.textRenderer.getWidth(PIECE_PRICE_TEXT) - 2,
                 49, textColor, false);
+        context.drawText(this.textRenderer, QUANTITY_TEXT,
+                112 - this.textRenderer.getWidth(QUANTITY_TEXT) - 2,
+                72, textColor, false);
     }
 
     @Override
@@ -142,7 +153,9 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
         context.drawTexture(texture, position.getX() + 109, position.getY() + 21, 0, this.backgroundHeight +
                 (this.pinFieldEditable ? 0 : 16), 60, 16);
         context.drawTexture(texture, position.getX() + 109, position.getY() + 45, 0, this.backgroundHeight +
-                (this.amountFieldEditable ? 0 : 16), 60, 16);
+                (this.piecePriceFieldEditable ? 0 : 16), 60, 16);
+        context.drawTexture(texture, position.getX() + 109, position.getY() + 45, 0, this.backgroundHeight +
+                (this.quantityFieldEditable ? 0 : 16), 60, 16);
     }
 
     @Override
@@ -150,7 +163,8 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
         renderBackground(context);
         super.render(context, mouseX, mouseY, delta);
         this.pinField.render(context, mouseX, mouseY, delta);
-        this.amountField.render(context, mouseX, mouseY, delta);
+        this.piecePriceField.render(context, mouseX, mouseY, delta);
+        this.quantityField.render(context, mouseX, mouseY, delta);
         drawMouseoverTooltip(context, mouseX, mouseY);
     }
 
@@ -160,29 +174,33 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
         boolean pinFieldShouldBeEditable = this.pinFieldShouldBeEditable();
         if(this.pinFieldEditable != pinFieldShouldBeEditable) this.setPinFieldEditable(pinFieldShouldBeEditable);
         this.pinField.tick();
-        boolean amountFieldShouldBeEditable = this.amountFieldShouldBeEditable();
-        if(this.amountFieldEditable != amountFieldShouldBeEditable) this.setAmountFieldEditable(amountFieldShouldBeEditable);
-        this.amountField.tick();
-        int amount = parseAmountField();
         NbtCompound cardNbt = this.handler.getInput().getStack().getNbt();
-        if(cardNbt != null && cardNbt.contains("id")) {
+        int cardPin = parsePinField();
+        if(cardPin != -1 && cardNbt != null && cardNbt.contains("id")) {
             ID cardId = new ID(cardNbt.getLong("id"));
-            if(!cardId.equals(this.balanceId)) {
-                this.balanceId = cardId;
-                this.balance = GetCardBalancePacket.C2S.send(cardId).read();
+            if(!cardId.equals(this.cardPinCorrectId)) {
+                this.cardPinCorrectId = cardId;
+                this.cardPinCorrect = IsCardPinCorrectPacket.C2S.send(cardId, Hash.digest(this.pinField.getText())).read();
             }
         }
         else {
-            this.balance = -1;
-            this.balanceId = null;
+            this.cardPinCorrect = false;
+            this.cardPinCorrectId = null;
         }
-        boolean depositShouldBeDisabled = amount == -1 || !amountFieldShouldBeEditable ||
-                Utils.countCash(handler.getPlayerInventory()) < amount || balance < 0;
-        if(this.buttons.get(0).isDisabled() != depositShouldBeDisabled)
-            this.buttons.get(0).setDisabled(depositShouldBeDisabled);
-        boolean withdrawShouldBeDisabled = amount == -1 || !amountFieldShouldBeEditable || balance < amount;
-        if(this.buttons.get(1).isDisabled() != withdrawShouldBeDisabled)
-            this.buttons.get(1).setDisabled(withdrawShouldBeDisabled);
+        boolean piecePriceFieldShouldBeEditable = this.piecePriceFieldShouldBeEditable();
+        if(this.piecePriceFieldEditable != piecePriceFieldShouldBeEditable)
+            this.setPiecePriceFieldEditable(piecePriceFieldShouldBeEditable);
+        this.piecePriceField.tick();
+        boolean quantityFieldShouldBeEditable = this.quantityFieldShouldBeEditable();
+        if(this.quantityFieldEditable != quantityFieldShouldBeEditable)
+            this.setQuantityFieldEditable(quantityFieldShouldBeEditable);
+        this.quantityField.tick();
+        int quantity = parseQuantityField();
+        ItemStack stack = this.handler.getSlot(VendingMachineBlockEntity.ITEM_SLOT).getStack();
+        boolean configureShouldBeDisabled = quantity == -1 || !quantityFieldShouldBeEditable || this.cardPinCorrect ||
+                stack.isEmpty();
+        if(this.buttons.get(0).isDisabled() != configureShouldBeDisabled)
+            this.buttons.get(0).setDisabled(configureShouldBeDisabled);
     }
 
     private void setPinFieldEditable(boolean editable) {
@@ -190,9 +208,14 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
         this.pinFieldEditable = editable;
     }
 
-    private void setAmountFieldEditable(boolean editable) {
-        this.amountField.setEditable(editable);
-        this.amountFieldEditable = editable;
+    private void setPiecePriceFieldEditable(boolean editable) {
+        this.piecePriceField.setEditable(editable);
+        this.piecePriceFieldEditable = editable;
+    }
+
+    private void setQuantityFieldEditable(boolean editable) {
+        this.quantityField.setEditable(editable);
+        this.quantityFieldEditable = editable;
     }
 
     public int parsePinField() {
@@ -204,12 +227,21 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
         catch(NumberFormatException e) {return -1;}
     }
 
-    public int parseAmountField() {
-        String amount = this.amountField.getText();
-        if(amount == null || amount.contains("-")) return -1;
-        String string = SharedConstants.stripInvalidChars(amount);
+    public int parsePiecePriceField() {
+        String piecePrice = this.piecePriceField.getText();
+        if(piecePrice == null || piecePrice.contains("-")) return -1;
+        String string = SharedConstants.stripInvalidChars(piecePrice);
         if(string.isEmpty() || string.length() > 9) return -1;
-        try {return Integer.parseInt(amount);}
+        try {return Integer.parseInt(piecePrice);}
+        catch(NumberFormatException e) {return -1;}
+    }
+
+    public int parseQuantityField() {
+        String quantity = this.quantityField.getText();
+        if(quantity == null || quantity.contains("-")) return -1;
+        String string = SharedConstants.stripInvalidChars(quantity);
+        if(string.isEmpty() || string.length() > 9) return -1;
+        try {return Integer.parseInt(quantity);}
         catch(NumberFormatException e) {return -1;}
     }
 
@@ -221,39 +253,21 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
                 outputStack.isEmpty();
     }
 
-    public boolean amountFieldShouldBeEditable() {
-        return pinFieldShouldBeEditable() && parsePinField() != -1;
+    public boolean piecePriceFieldShouldBeEditable() {
+        return pinFieldShouldBeEditable() && cardPinCorrect;
+    }
+
+    public boolean quantityFieldShouldBeEditable() {
+        return piecePriceFieldShouldBeEditable() && parsePiecePriceField() != -1;
     }
 
     @Environment(value = EnvType.CLIENT)
-    static class DepositButtonWidget extends BaseButtonWidget {
-        private final AutomatedTellerMachineScreen screen;
+    static class ConfigureButtonWidget extends BaseButtonWidget {
+        private final VendingMachineConfigScreen screen;
 
-        public DepositButtonWidget(@NotNull AutomatedTellerMachineScreen screen) {
-            super(screen.position.getX() + 7, screen.position.getY() + 68, 60, 189, 79, 22,
-                    DEPOSIT_TEXT, screen.texture, screen.textRenderer);
-            this.screen = screen;
-        }
-
-        @Override
-        public void onPress() {
-            if(this.disabled) return;
-            ItemStack card = screen.handler.getInventory().getStack(AutomatedTellerMachineBlockEntity.INPUT_SLOT);
-            if(card.getNbt() == null || !card.getNbt().contains("id")) return;
-            DepositCashC2SPacket.send(new ID(card.getNbt().getLong("id")),
-                    Hash.digest(String.valueOf(screen.pinField.getText())), screen.parseAmountField());
-            screen.balanceId = null;
-            screen.balance = -1;
-        }
-    }
-
-    @Environment(value = EnvType.CLIENT)
-    static class WithdrawButtonWidget extends BaseButtonWidget {
-        private final AutomatedTellerMachineScreen screen;
-
-        public WithdrawButtonWidget(@NotNull AutomatedTellerMachineScreen screen) {
+        public ConfigureButtonWidget(@NotNull VendingMachineConfigScreen screen) {
             super(screen.position.getX() + 90, screen.position.getY() + 68, 60, 189, 79, 22,
-                    WITHDRAW_TEXT, screen.texture, screen.textRenderer);
+                    CONFIGURE_TEXT, screen.texture, screen.textRenderer);
             this.screen = screen;
         }
 
@@ -262,10 +276,8 @@ public class AutomatedTellerMachineScreen extends HandledScreen<AutomatedTellerM
             if(this.disabled) return;
             ItemStack card = screen.handler.getInventory().getStack(AutomatedTellerMachineBlockEntity.INPUT_SLOT);
             if(card.getNbt() == null || !card.getNbt().contains("id")) return;
-            WithdrawCashC2SPacket.send(new ID(card.getNbt().getLong("id")),
-                    Hash.digest(String.valueOf(screen.pinField.getText())), screen.parseAmountField());
-            screen.balanceId = null;
-            screen.balance = -1;
+            /*WithdrawCashC2SPacket.send(new ID(card.getNbt().getLong("id")),
+                    Hash.digest(String.valueOf(screen.pinField.getText())), screen.parseAmountField());*/
         }
     }
 }

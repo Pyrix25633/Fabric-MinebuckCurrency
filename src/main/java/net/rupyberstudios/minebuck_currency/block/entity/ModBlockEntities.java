@@ -15,6 +15,9 @@ public class ModBlockEntities {
     public static final BlockEntityType<AutomatedTellerMachineBlockEntity> AUTOMATED_TELLER_MACHINE =
             Registry.register(Registries.BLOCK_ENTITY_TYPE, new Identifier(MinebuckCurrency.MOD_ID, "automated_teller_machine"),
             FabricBlockEntityTypeBuilder.create(AutomatedTellerMachineBlockEntity::new, ModBlocks.AUTOMATED_TELLER_MACHINE).build());
+    public static final BlockEntityType<VendingMachineBlockEntity> VENDING_MACHINE =
+            Registry.register(Registries.BLOCK_ENTITY_TYPE, new Identifier(MinebuckCurrency.MOD_ID, "vending_machine"),
+                    FabricBlockEntityTypeBuilder.create(VendingMachineBlockEntity::new, ModBlocks.VENDING_MACHINE).build());
 
     public static void registerBlockEntities() {
         MinebuckCurrency.LOGGER.info("Registering ModBlockEntities for " + MinebuckCurrency.MOD_ID);

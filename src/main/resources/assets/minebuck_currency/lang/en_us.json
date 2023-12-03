@@ -24,6 +24,12 @@
   "container.minebuck_currency.automated_teller_machine.withdraw": "Withdraw",
 
   "block.minebuck_currency.vending_machine": "Vending Machine",
+  "container.minebuck_currency.vending_machine.config": "Config",
+  "container.minebuck_currency.vending_machine.config.pin": "PIN: ",
+  "container.minebuck_currency.vending_machine.config.piece_price": "Piece Price: ",
+  "container.minebuck_currency.vending_machine.config.quantity": "Quantity: ",
+  "container.minebuck_currency.vending_machine.config.configure": "Configure",
+  "container.minebuck_currency.vending_machine.vending_machine": "Vending Machine",
 
   "symbol.minebuck_currency.minebuck": "Ⓜ",
 

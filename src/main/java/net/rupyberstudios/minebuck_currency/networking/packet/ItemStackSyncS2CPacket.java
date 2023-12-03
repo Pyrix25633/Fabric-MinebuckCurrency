@@ -25,7 +25,7 @@ public class ItemStackSyncS2CPacket {
         for(ItemStack item : items) data.writeItemStack(item);
         data.writeBlockPos(pos);
         for(ServerPlayerEntity player : PlayerLookup.tracking((ServerWorld)world, pos))
-            ServerPlayNetworking.send(player, ModMessages.ITEM_STACK_SYNC_ID, data);
+            ServerPlayNetworking.send(player, ModMessages.ITEM_STACK_SYNC, data);
     }
 
     public static void receive(MinecraftClient client, ClientPlayNetworkHandler handler,

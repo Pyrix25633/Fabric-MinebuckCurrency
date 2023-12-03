@@ -7,8 +7,9 @@ import net.rupyberstudios.minebuck_currency.MinebuckCurrency;
 import net.rupyberstudios.minebuck_currency.networking.packet.*;
 
 public class ModMessages {
-    public static final Identifier ITEM_STACK_SYNC_ID = new Identifier(MinebuckCurrency.MOD_ID, "item_stack_sync");
-    public static final Identifier ACTIVATE_CARD_ID = new Identifier(MinebuckCurrency.MOD_ID, "activate_card");
+    public static final Identifier ITEM_STACK_SYNC = new Identifier(MinebuckCurrency.MOD_ID, "item_stack_sync");
+    public static final Identifier ACTIVATE_CARD = new Identifier(MinebuckCurrency.MOD_ID, "activate_card");
+    public static final Identifier IS_CARD_PIN_CORRECT = new Identifier(MinebuckCurrency.MOD_ID, "is_card_pin_correct");
     public static final Identifier GET_CARD_OWNER = new Identifier(MinebuckCurrency.MOD_ID, "get_card_owner");
     public static final Identifier GET_CARD_BALANCE = new Identifier(MinebuckCurrency.MOD_ID, "get_card_balance");
     public static final Identifier GET_PERSONAL_CARDS_TOTAL_BALANCE =
@@ -18,7 +19,8 @@ public class ModMessages {
     public static final Identifier GET_RECEIPT_INFO = new Identifier(MinebuckCurrency.MOD_ID, "get_receipt_info");
 
     public static void registerS2CPackets() {
-        ClientPlayNetworking.registerGlobalReceiver(ITEM_STACK_SYNC_ID, ItemStackSyncS2CPacket::receive);
+        ClientPlayNetworking.registerGlobalReceiver(ITEM_STACK_SYNC, ItemStackSyncS2CPacket::receive);
+        ClientPlayNetworking.registerGlobalReceiver(IS_CARD_PIN_CORRECT, IsCardPinCorrectPacket.S2C::receive);
         ClientPlayNetworking.registerGlobalReceiver(GET_CARD_OWNER, GetCardOwnerPacket.S2C::receive);
         ClientPlayNetworking.registerGlobalReceiver(GET_CARD_BALANCE, GetCardBalancePacket.S2C::receive);
         ClientPlayNetworking.registerGlobalReceiver(GET_PERSONAL_CARDS_TOTAL_BALANCE,
@@ -27,7 +29,8 @@ public class ModMessages {
     }
 
     public static void registerC2SPackets() {
-        ServerPlayNetworking.registerGlobalReceiver(ACTIVATE_CARD_ID, ActivateCardC2SPacket::receive);
+        ServerPlayNetworking.registerGlobalReceiver(ACTIVATE_CARD, ActivateCardC2SPacket::receive);
+        ServerPlayNetworking.registerGlobalReceiver(IS_CARD_PIN_CORRECT, IsCardPinCorrectPacket.C2S::receive);
         ServerPlayNetworking.registerGlobalReceiver(GET_CARD_OWNER, GetCardOwnerPacket.C2S::receive);
         ServerPlayNetworking.registerGlobalReceiver(GET_CARD_BALANCE, GetCardBalancePacket.C2S::receive);
         ServerPlayNetworking.registerGlobalReceiver(GET_PERSONAL_CARDS_TOTAL_BALANCE,
