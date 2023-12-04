@@ -14,6 +14,8 @@ public class ModScreenHandlers {
             new ExtendedScreenHandlerType<>(ComputerCardBalanceScreenHandler::new);
     public static final ScreenHandlerType<AutomatedTellerMachineScreenHandler> AUTOMATED_TELLER_MACHINE_SCREEN_HANDLER =
             new ExtendedScreenHandlerType<>(AutomatedTellerMachineScreenHandler::new);
+    public static final ScreenHandlerType<VendingMachineConfigScreenHandler> VENDING_MACHINE_CONFIG_SCREEN_HANDLER =
+            new ExtendedScreenHandlerType<>(VendingMachineConfigScreenHandler::new);
 
     public static void registerScreenHandlers() {
         Registry.register(Registries.SCREEN_HANDLER, new Identifier(MinebuckCurrency.MOD_ID, "computer_activate_card"),
@@ -22,5 +24,7 @@ public class ModScreenHandlers {
                 COMPUTER_CARD_BALANCE_SCREEN_HANDLER);
         Registry.register(Registries.SCREEN_HANDLER, new Identifier(MinebuckCurrency.MOD_ID, "automated_teller_machine"),
                 AUTOMATED_TELLER_MACHINE_SCREEN_HANDLER);
+        Registry.register(Registries.SCREEN_HANDLER, new Identifier(MinebuckCurrency.MOD_ID, "vending_machine_config"),
+                VENDING_MACHINE_CONFIG_SCREEN_HANDLER);
     }
 }

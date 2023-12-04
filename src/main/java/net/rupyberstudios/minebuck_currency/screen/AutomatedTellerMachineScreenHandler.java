@@ -20,8 +20,7 @@ import org.jetbrains.annotations.NotNull;
 public class AutomatedTellerMachineScreenHandler extends ScreenHandler {
     private final Inventory inventory;
     private final PlayerInventory playerInventory;
-    private final Slot input;
-    private final Slot output;
+    private final Slot input, output;
 
     public AutomatedTellerMachineScreenHandler(int syncId, PlayerInventory inventory, PacketByteBuf packetByteBuf) {
         this(syncId, inventory, new SimpleInventory(2));

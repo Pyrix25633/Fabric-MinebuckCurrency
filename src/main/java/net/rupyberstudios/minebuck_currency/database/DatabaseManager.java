@@ -217,7 +217,7 @@ public class DatabaseManager {
         else destinationPlayer = playerResults.getString("username");
         return new ReceiptInfo(emitterPlayer, sourcePlayer, destinationPlayer,
                 new ID(results.getLong("sourceCardId")), new ID(results.getLong("destinationCardId")),
-                results.getInt("amount"), results.getString("item"), results.getInt("quanitty"),
+                results.getInt("amount"), results.getString("item"), results.getInt("quantity"),
                 results.getString("service"), results.getString("description"));
     }
 

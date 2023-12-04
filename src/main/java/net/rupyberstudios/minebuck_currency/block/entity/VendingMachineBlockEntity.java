@@ -20,6 +20,7 @@ import net.rupyberstudios.minebuck_currency.block.property.VendingMachineOpenScr
 import net.rupyberstudios.minebuck_currency.networking.packet.ItemStackSyncS2CPacket;
 import net.rupyberstudios.minebuck_currency.screen.ComputerActivateCardScreenHandler;
 import net.rupyberstudios.minebuck_currency.screen.ComputerCardBalanceScreenHandler;
+import net.rupyberstudios.minebuck_currency.screen.VendingMachineConfigScreenHandler;
 import org.jetbrains.annotations.Nullable;
 
 public class VendingMachineBlockEntity extends BlockEntity implements ExtendedScreenHandlerFactory, ImplementedInventory {
@@ -66,10 +67,10 @@ public class VendingMachineBlockEntity extends BlockEntity implements ExtendedSc
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
-        return switch(getCachedState().get(ComputerBlock.OPEN_SCREEN)) {
+        return switch(getCachedState().get(VendingMachineBlock.OPEN_SCREEN)) {
             case OFF -> null;
-            case ACTIVATE_CARD -> new VendingMachineConfigScreenHandler(syncId, playerInventory, this);
-            case CARD_BALANCE -> new VendingMachineScreenHandler(syncId, playerInventory, this);
+            case CONFIG -> new VendingMachineConfigScreenHandler(syncId, playerInventory, this);
+            case VENDING_MACHINE -> new VendingMachineConfigScreenHandler(syncId, playerInventory, this); //TODO: modify
         };
     }
 

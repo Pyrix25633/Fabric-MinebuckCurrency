@@ -11,6 +11,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.rupyberstudios.minebuck_currency.block.entity.AutomatedTellerMachineBlockEntity;
 import net.rupyberstudios.minebuck_currency.block.entity.ComputerBlockEntity;
+import net.rupyberstudios.minebuck_currency.block.entity.VendingMachineBlockEntity;
 import net.rupyberstudios.minebuck_currency.database.ID;
 import net.rupyberstudios.minebuck_currency.database.Utils;
 import net.rupyberstudios.minebuck_currency.item.ModItems;
@@ -20,21 +21,20 @@ import org.jetbrains.annotations.NotNull;
 public class VendingMachineConfigScreenHandler extends ScreenHandler {
     private final Inventory inventory;
     private final PlayerInventory playerInventory;
-    private final Slot input;
-    private final Slot output;
+    private final Slot card, item;
 
     public VendingMachineConfigScreenHandler(int syncId, PlayerInventory inventory, PacketByteBuf packetByteBuf) {
         this(syncId, inventory, new SimpleInventory(2));
     }
 
     public VendingMachineConfigScreenHandler(int syncId, @NotNull PlayerInventory playerInventory, Inventory inventory) {
-        super(ModScreenHandlers.AUTOMATED_TELLER_MACHINE_SCREEN_HANDLER, syncId);
+        super(ModScreenHandlers.VENDING_MACHINE_CONFIG_SCREEN_HANDLER, syncId);
         checkSize(inventory, 2);
         this.inventory = inventory;
         this.playerInventory = playerInventory;
         inventory.onOpen(playerInventory.player);
 
-        this.input = this.addSlot(new Slot(inventory, AutomatedTellerMachineBlockEntity.INPUT_SLOT, 8, 21) {
+        this.card = this.addSlot(new Slot(inventory, VendingMachineBlockEntity.CARD_SLOT, 8, 21) {
             @Override
             public boolean canInsert(ItemStack stack) {
                 if(stack.getItem() != ModItems.CARD) return false;
@@ -42,30 +42,40 @@ public class VendingMachineConfigScreenHandler extends ScreenHandler {
                 return nbt != null && nbt.contains("id");
             }
         });
-        this.output = this.addSlot(new OutputSlot(inventory, AutomatedTellerMachineBlockEntity.OUTPUT_SLOT, 8, 45));
+        this.item = this.addSlot(new Slot(inventory, VendingMachineBlockEntity.ITEM_SLOT, 8, 45) {// TODO: fix
+            @Override
+            public int getMaxItemCount() {
+                return 1;
+            }
+
+            @Override
+            public boolean canTakeItems(PlayerEntity playerEntity) {
+                return false;
+            }
+
+            @Override
+            public ItemStack insertStack(ItemStack stack, int count) {
+                if(stack.isEmpty() || !this.canInsert(stack))
+                    return stack;
+                this.setStack(new ItemStack(stack.getItem(), 1));
+                return stack;
+            }
+        });
 
         addPlayerInventory(playerInventory);
         addPlayerHotbar(playerInventory);
     }
 
-    public Slot getInput() {
-        return input;
+    public Slot getCard() {
+        return card;
     }
 
-    public void withdrawCash(int amount) {
-        Utils.addCash(playerInventory, amount);
+    public Slot getItem() {
+        return item;
     }
 
-    public void depositCash(int amount) {
-        Utils.removeCash(playerInventory, amount);
-    }
+    public void configure() {
 
-    public void printReceipt(@NotNull ID receiptId) {
-        NbtCompound nbt = new NbtCompound();
-        nbt.putLong("id", receiptId.toLong());
-        ItemStack stack = new ItemStack(ModItems.RECEIPT);
-        stack.setNbt(nbt);
-        output.setStack(stack);
     }
 
     @Override
@@ -106,10 +116,9 @@ public class VendingMachineConfigScreenHandler extends ScreenHandler {
     public void onClosed(PlayerEntity player) {
         super.onClosed(player);
         if(player.getWorld().isClient) return;
-        player.getInventory().offerOrDrop(inventory.getStack(ComputerBlockEntity.INPUT_SLOT));
-        player.getInventory().offerOrDrop(inventory.getStack(ComputerBlockEntity.OUTPUT_SLOT));
-        if(this.inventory instanceof AutomatedTellerMachineBlockEntity automatedTellerMachineEntity)
-            automatedTellerMachineEntity.getPropertyDelegate().set(0, 0);
+        player.getInventory().offerOrDrop(inventory.getStack(VendingMachineBlockEntity.CARD_SLOT));
+        if(this.inventory instanceof VendingMachineBlockEntity vendingMachineEntity)
+            vendingMachineEntity.getPropertyDelegate().set(0, 0);
         inventory.markDirty();
     }
 
@@ -121,12 +130,12 @@ public class VendingMachineConfigScreenHandler extends ScreenHandler {
     private void addPlayerInventory(PlayerInventory playerInventory) {
         for(int i = 0; i < 3; ++i)
             for(int l = 0; l < 9; ++l)
-                this.addSlot(new Slot(playerInventory, l + i * 9 + 9, 8 + l * 18, 107 + i * 18));
+                this.addSlot(new Slot(playerInventory, l + i * 9 + 9, 8 + l * 18, 129 + i * 18));
     }
 
     private void addPlayerHotbar(PlayerInventory playerInventory) {
         for(int i = 0; i < 9; ++i)
-            this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 165));
+            this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 187));
     }
 
     public PlayerInventory getPlayerInventory() {

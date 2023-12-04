@@ -13,10 +13,7 @@ import net.rupyberstudios.minebuck_currency.block.entity.client.ComputerBlockEnt
 import net.rupyberstudios.minebuck_currency.item.ModItems;
 import net.rupyberstudios.minebuck_currency.item.custom.CardItem;
 import net.rupyberstudios.minebuck_currency.networking.ModMessages;
-import net.rupyberstudios.minebuck_currency.screen.AutomatedTellerMachineScreen;
-import net.rupyberstudios.minebuck_currency.screen.ComputerActivateCardScreen;
-import net.rupyberstudios.minebuck_currency.screen.ComputerCardBalanceScreen;
-import net.rupyberstudios.minebuck_currency.screen.ModScreenHandlers;
+import net.rupyberstudios.minebuck_currency.screen.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,9 +37,11 @@ public class MinebuckCurrencyClient implements ClientModInitializer {
         HandledScreens.register(ModScreenHandlers.COMPUTER_ACTIVATE_CARD_SCREEN_HANDLER, ComputerActivateCardScreen::new);
         HandledScreens.register(ModScreenHandlers.COMPUTER_CARD_BALANCE_SCREEN_HANDLER, ComputerCardBalanceScreen::new);
         HandledScreens.register(ModScreenHandlers.AUTOMATED_TELLER_MACHINE_SCREEN_HANDLER, AutomatedTellerMachineScreen::new);
+        HandledScreens.register(ModScreenHandlers.VENDING_MACHINE_CONFIG_SCREEN_HANDLER, VendingMachineConfigScreen::new);
 
         BlockEntityRendererFactories.register(ModBlockEntities.COMPUTER, ComputerBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.AUTOMATED_TELLER_MACHINE, AutomatedTellerMachineBlockEntityRenderer::new);
+        //TODO: create renderer
 
         ModMessages.registerS2CPackets();
 

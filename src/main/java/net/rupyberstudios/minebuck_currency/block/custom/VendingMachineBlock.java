@@ -1,9 +1,11 @@
 package net.rupyberstudios.minebuck_currency.block.custom;
 
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
@@ -12,9 +14,10 @@ import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.rupyberstudios.minebuck_currency.block.entity.ComputerBlockEntity;
+import net.rupyberstudios.minebuck_currency.block.entity.VendingMachineBlockEntity;
 import net.rupyberstudios.minebuck_currency.block.property.VendingMachineOpenScreen;
 import net.rupyberstudios.minebuck_currency.block.property.VendingMachineOpenScreenProperty;
+import net.rupyberstudios.minebuck_currency.item.ModItems;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,15 +34,15 @@ public class VendingMachineBlock extends BlockWithEntity implements BlockEntityP
     @SuppressWarnings("deprecation")
     public ActionResult onUse(BlockState state, @NotNull World world, BlockPos pos, @NotNull PlayerEntity player,
                               Hand hand, BlockHitResult hit) {
-        /*ItemStack heldItem = player.getStackInHand(hand);
+        ItemStack heldItem = player.getStackInHand(hand);
         if(world.isClient || heldItem.getItem() != ModItems.CARD || state.get(ON))
             return ActionResult.FAIL;
         state = state.with(ON, true);
-        ComputerOpenScreen screen = (heldItem.getNbt() == null || !heldItem.getNbt().contains("id")) ?
-                ComputerOpenScreen.ACTIVATE_CARD : ComputerOpenScreen.CARD_BALANCE;
+        VendingMachineOpenScreen screen = (heldItem.getNbt() == null || !heldItem.getNbt().contains("id")) ?
+                VendingMachineOpenScreen.VENDING_MACHINE : VendingMachineOpenScreen.CONFIG;
         world.setBlockState(pos, state.with(OPEN_SCREEN, screen));
-        ExtendedScreenHandlerFactory screenHandlerFactory = (ComputerBlockEntity)world.getBlockEntity(pos);
-        if(screenHandlerFactory != null) player.openHandledScreen(screenHandlerFactory);*/
+        ExtendedScreenHandlerFactory screenHandlerFactory = (VendingMachineBlockEntity)world.getBlockEntity(pos);
+        if(screenHandlerFactory != null) player.openHandledScreen(screenHandlerFactory);
         return ActionResult.SUCCESS;
     }
 
@@ -54,8 +57,8 @@ public class VendingMachineBlock extends BlockWithEntity implements BlockEntityP
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if(state != newState) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
-            if(blockEntity instanceof ComputerBlockEntity computerBlockEntity) {
-                ItemScatterer.spawn(world, pos, computerBlockEntity);
+            if(blockEntity instanceof VendingMachineBlockEntity vendingMachineBlockEntity) {
+                ItemScatterer.spawn(world, pos, vendingMachineBlockEntity);
                 world.updateComparators(pos, this);
             }
             super.onStateReplaced(state, world, pos, newState, moved);
@@ -87,6 +90,6 @@ public class VendingMachineBlock extends BlockWithEntity implements BlockEntityP
     @Nullable
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new ComputerBlockEntity(pos, state);
+        return new VendingMachineBlockEntity(pos, state);
     }
 }

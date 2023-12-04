@@ -32,7 +32,7 @@ import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
 
 @Environment(value = EnvType.CLIENT)
-public class VendingMachineConfigScreen extends HandledScreen<AutomatedTellerMachineScreenHandler> {
+public class VendingMachineConfigScreen extends HandledScreen<VendingMachineConfigScreenHandler> {
     private Identifier texture;
     private int textColor;
     private static final Text PIN_TEXT = Text.translatable("container.minebuck_currency.vending_machine.config.pin");
@@ -46,10 +46,10 @@ public class VendingMachineConfigScreen extends HandledScreen<AutomatedTellerMac
     private boolean cardPinCorrect = false;
     private ID cardPinCorrectId;
 
-    public VendingMachineConfigScreen(AutomatedTellerMachineScreenHandler handler, PlayerInventory inventory, Text title) {
+    public VendingMachineConfigScreen(VendingMachineConfigScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
         this.position = new Position(0, 0);
-        this.backgroundHeight = 189;
+        this.backgroundHeight = 211;
         this.playerInventoryTitleY = this.backgroundHeight - 94;
         this.cardPinCorrectId = null;
     }
@@ -154,7 +154,7 @@ public class VendingMachineConfigScreen extends HandledScreen<AutomatedTellerMac
                 (this.pinFieldEditable ? 0 : 16), 60, 16);
         context.drawTexture(texture, position.getX() + 109, position.getY() + 45, 0, this.backgroundHeight +
                 (this.piecePriceFieldEditable ? 0 : 16), 60, 16);
-        context.drawTexture(texture, position.getX() + 109, position.getY() + 45, 0, this.backgroundHeight +
+        context.drawTexture(texture, position.getX() + 109, position.getY() + 68, 0, this.backgroundHeight +
                 (this.quantityFieldEditable ? 0 : 16), 60, 16);
     }
 
@@ -174,7 +174,7 @@ public class VendingMachineConfigScreen extends HandledScreen<AutomatedTellerMac
         boolean pinFieldShouldBeEditable = this.pinFieldShouldBeEditable();
         if(this.pinFieldEditable != pinFieldShouldBeEditable) this.setPinFieldEditable(pinFieldShouldBeEditable);
         this.pinField.tick();
-        NbtCompound cardNbt = this.handler.getInput().getStack().getNbt();
+        NbtCompound cardNbt = this.handler.getItem().getStack().getNbt();
         int cardPin = parsePinField();
         if(cardPin != -1 && cardNbt != null && cardNbt.contains("id")) {
             ID cardId = new ID(cardNbt.getLong("id"));
@@ -196,7 +196,7 @@ public class VendingMachineConfigScreen extends HandledScreen<AutomatedTellerMac
             this.setQuantityFieldEditable(quantityFieldShouldBeEditable);
         this.quantityField.tick();
         int quantity = parseQuantityField();
-        ItemStack stack = this.handler.getSlot(VendingMachineBlockEntity.ITEM_SLOT).getStack();
+        ItemStack stack = this.handler.getItem().getStack();
         boolean configureShouldBeDisabled = quantity == -1 || !quantityFieldShouldBeEditable || this.cardPinCorrect ||
                 stack.isEmpty();
         if(this.buttons.get(0).isDisabled() != configureShouldBeDisabled)
@@ -246,11 +246,8 @@ public class VendingMachineConfigScreen extends HandledScreen<AutomatedTellerMac
     }
 
     public boolean pinFieldShouldBeEditable() {
-        ItemStack inputStack = this.handler.getSlot(AutomatedTellerMachineBlockEntity.INPUT_SLOT).getStack();
-        ItemStack outputStack = this.handler.getSlot(AutomatedTellerMachineBlockEntity.OUTPUT_SLOT).getStack();
-        return inputStack.getItem() == ModItems.CARD &&
-                (inputStack.getNbt() != null && inputStack.getNbt().contains("id")) &&
-                outputStack.isEmpty();
+        ItemStack stack = this.handler.getCard().getStack();
+        return stack.getItem() == ModItems.CARD && (stack.getNbt() != null && stack.getNbt().contains("id"));
     }
 
     public boolean piecePriceFieldShouldBeEditable() {
@@ -266,7 +263,7 @@ public class VendingMachineConfigScreen extends HandledScreen<AutomatedTellerMac
         private final VendingMachineConfigScreen screen;
 
         public ConfigureButtonWidget(@NotNull VendingMachineConfigScreen screen) {
-            super(screen.position.getX() + 90, screen.position.getY() + 68, 60, 189, 79, 22,
+            super(screen.position.getX() + 43, screen.position.getY() + 90, 60, 211, 90, 22,
                     CONFIGURE_TEXT, screen.texture, screen.textRenderer);
             this.screen = screen;
         }
